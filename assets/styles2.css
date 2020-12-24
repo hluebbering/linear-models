@@ -1,0 +1,137 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans&family=Roboto&family=Roboto+Mono&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans&family=Trocchi&display=swap');
+
+h1 {
+  font-family: 'Trocchi', sans-serif;
+  font-size:26px;
+}
+
+h2 {
+  font-family: 'Trocchi', sans-serif;
+  color:#176e6b;
+  font-size:24px;
+}
+h3 {
+  font-family: 'Trocchi', sans-serif;
+  font-size:20px;
+  color: #272173;
+}
+
+
+h4 {
+  font-family: 'Trocchi', sans-serif;
+  color:black;
+  font-size:17px;
+}
+span.a01 {
+  font-family: 'Trocchi', sans-serif;
+  color:black;
+  font-size:17px;
+}
+
+h5{
+  font-family: 'Trocchi', sans-serif;
+  color:#00BAB3;
+  font-size:15px;
+}
+
+body {
+  font-family: "Times New Roman", Times, serif;
+  margin: 8px;
+  font-size: 14px;
+  
+}
+p {
+  font-size: 14px;
+  color: black;
+  margin-right: 8px;
+  margin-left: 8px;
+}
+
+.a1 {
+  color: black;
+  border-radius: 25px;
+  width: 90%;
+  padding: 2px;
+  white-space:normal;
+  background: #b2beb5;
+  font-size: 11px;
+  margin: auto;
+  box-shadow: 4px 4px 4px #aaa;
+  line-height: 10px;
+}
+.a2 {
+  font-size: 10px;
+  color: black;
+  border-radius: 25px;
+  width: 90%;
+  padding: 2px;
+  white-space:normal;
+  background: #e1eae8;
+  margin: auto;
+  box-shadow: 4px 4px 4px #aaa;
+}
+.a3 {
+  color: black;
+  border-radius: 25px;
+  width: 90%;
+  padding: 2px;
+  white-space:normal;
+  background: #d6e1de;
+  font-size: 10px;
+  margin: auto;
+  box-shadow: 4px 4px 4px #aaa;
+}
+.b1 {
+  color: black;
+  border-radius: 25px;
+  width: 90%;
+  padding: 8px;
+  white-space:normal;
+  background: #f9fafb;
+  font-size: 12px;
+  margin: auto;
+  box-shadow: 4px 4px 4px #aaa;
+  line-height: 18px;
+}
+.b01 {
+  color: black;
+  border-radius: 25px;
+  width: 58%;
+  padding: 0;
+  white-space:normal;
+  background: #f9fafb;
+  font-size: 10px;
+  margin: auto;
+  box-shadow: 4px 4px 4px #aaa;
+  line-height: 10px;
+}
+
+.b2 {
+  color: black;
+  border-radius: 25px;
+  width: 82%;
+  padding: 2px;
+  white-space:normal;
+  background: linear-gradient(240deg, #f2ebff, #ebf4ff);
+  font-size: 8px;
+  margin: auto;
+  box-shadow: 4px 4px 4px #aaa;
+}
+
+pre {
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+pre.r {
+  max-height: none;
+}
+
+
+.tocify-item{
+  color: black;
+  
+}
+
+

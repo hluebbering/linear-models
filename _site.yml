@@ -1,0 +1,8 @@
+name: "my-website"
+navbar:
+  title: "Multiple Linear Regressions"
+  left:
+    - text: "Model Diagnostics"
+      href: index.html
+    - text: "Putting it all together"
+      href: 01-index.html
