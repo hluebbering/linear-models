@@ -1,8 +1,8 @@
-name: "my-website"
+name: "Statistical Linear Models"
 navbar:
-  title: "Multiple Linear Regressions"
+  title: "Statistical Linear Models"
   left:
-    - text: "Model Diagnostics"
+    - text: "Linear Models in R"
       href: index.html
-    - text: "Summary"
+    - text: "Model Diagnostics"
       href: 01-index.html

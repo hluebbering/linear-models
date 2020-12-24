@@ -11,7 +11,7 @@
 
 
 
-<title>Multiple Linear Regressions</title>
+<title>Model Diagnostics</title>
 
 <script src="site_libs/header-attrs-2.6/header-attrs.js"></script>
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
@@ -24,8 +24,10 @@
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
-<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
 
 <style type="text/css">
   code{white-space: pre-wrap;}
@@ -355,15 +357,15 @@ div.tocify {
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="index.html">Multiple Linear Regressions</a>
+      <a class="navbar-brand" href="index.html">Statistical Linear Models</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="index.html">Model Diagnostics</a>
+  <a href="index.html">Linear Models in R</a>
 </li>
 <li>
-  <a href="01-index.html">Summary</a>
+  <a href="01-index.html">Model Diagnostics</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -377,239 +379,551 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Multiple Linear Regressions</h1>
+<h1 class="title toc-ignore">Model Diagnostics</h1>
 
 </div>
 
 
-<div id="random-matrices" class="section level2">
-<h2>Random Matrices:</h2>
-<p>In Linear Modeling, we begin by discussing Matrix Rules and Properties and learning about <strong>Excepted Values</strong> and <strong>Covariances</strong>, and <strong>Variances</strong>, all of which are Random Matrices.</p>
-<p><strong>Expectation</strong> describes the average value</p>
-<p><span class="math display">\[E[X] = \begin{cases}
-\sum_x xp_X(x) &amp; X \textrm{ is a discrete random variable}\\
-\int_{-\infty}^{\infty}xf_X(x)dx &amp; X \textrm{ is a continuous random variable}
-\end{cases}\]</span></p>
-<p><strong>Covariance</strong> is a measure of joint variability between two random variables</p>
-<p><span class="math display">\[cov(\mathbf{X},\mathbf{Y}) = E[(\mathbf{X} - E[\mathbf{X}])(\mathbf{Y} - E[\mathbf{Y}])]\]</span></p>
-<p><strong>Variance</strong> measures the spread of a variable</p>
-<p><span class="math display">\[var(\mathbf{X}) = cov(\mathbf{X}, \mathbf{X}) = E[\mathbf{X}^2] - E[\mathbf{X}]^2\]</span></p>
-<div id="least-squares-estimation" class="section level3">
-<h3>Least Squares Estimation:</h3>
-<p><span class="math display">\[\mathbf{y} = \mathbf{X} \beta + \epsilon\]</span></p>
-<p>The purpose of the <strong>least squares estimation</strong> is to estimate the relationship between various predictor variables <span class="math inline">\(X\)</span> and an outcome variable <span class="math inline">\(Y\)</span>. In using this relationship, we must understand the <strong>Law of Total Exception</strong> and <strong>Law of Total Variance</strong> rules.</p>
-<p>As a result, we can take the <strong>expected value</strong> of <span class="math inline">\(\hat \beta\)</span>, in which we want to show:</p>
-<p><span class="math display">\[\mathbf{E[\hat{\beta}]=\beta}\]</span></p>
-<p>In order to prove the above equation, we must use the Law of Total Exception and various Matrix rules. We can also take the <strong>variance of <span class="math inline">\(\hat \beta\)</span></strong>:</p>
-<p><span class="math display">\[\rm{var}{(\mathbf{\hat \beta})} = \hat \sigma ^2 (\mathbf{X^TX})^{-1}\]</span></p>
-<p>In order to get the variance of <span class="math inline">\(\hat \beta\)</span>, we have to calculate the variance/ covariance matrix using the properties of random matrices and the Law of Total Variance.</p>
-<div id="summary" class="section level4">
-<h4>Summary:</h4>
-<p>The overall idea of the <strong>Law of Total Exception</strong> and the <strong>Law of Total Variance</strong> rules allow us to calculate the <strong>Expected Value</strong> and <strong>Variance</strong> or our main estimator <span class="math inline">\(\mathbf{\hat \beta}\)</span> from the <strong>Least Squares Estimator</strong>.</p>
+<hr />
+<div id="checking-assumptions" class="section level2">
+<h2>Checking Assumptions</h2>
+<table class="table table-striped" style="font-size: 14px; width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;color: darkseagreen !important;">
+Assumptions
+</th>
+<th style="text-align:left;color: darkseagreen !important;">
+Checking Assumptions
+</th>
+<th style="text-align:left;color: darkseagreen !important;">
+Fixing Violated Assumptions
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;color: slategray !important;">
+Linearity
+</td>
+<td style="text-align:left;">
+Residuals vs. Fits Plots
+</td>
+<td style="text-align:left;">
+Transformations
+</td>
+</tr>
+<tr>
+<td style="text-align:left;color: slategray !important;">
+Constant Variance
+</td>
+<td style="text-align:left;">
+Residuals vs. Fits Plots
+</td>
+<td style="text-align:left;">
+Weighted/Generalized Least Squares (WLS/GLS)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;color: slategray !important;">
+Normality
+</td>
+<td style="text-align:left;">
+Q-Q Plot
+</td>
+<td style="text-align:left;">
+Robust Regression
+</td>
+</tr>
+<tr>
+<td style="text-align:left;color: slategray !important;">
+Correlated Errors
+</td>
+<td style="text-align:left;">
+Structure of the data
+</td>
+<td style="text-align:left;">
+Generalized Least Squares (GLS)
+</td>
+</tr>
+</tbody>
+</table>
+<div id="unusual-observations" class="section level3">
+<h3>Unusual Observations</h3>
+<table class="table table-striped" style="font-size: 14px; width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;color: darkseagreen !important;">
+Unusual Observations
+</th>
+<th style="text-align:left;color: darkseagreen !important;">
+Calculated As
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;color: slategray !important;">
+Leverage
+</td>
+<td style="text-align:left;">
+<span class="math inline">\(\underbrace{H_{ii} = h_i}_{\text{diagonals of the hat matrix}}\)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;color: slategray !important;">
+Outliers
+</td>
+<td style="text-align:left;">
+<span class="math inline">\(\underbrace{r_i = \frac{e_i}{s_e\sqrt{1 - h_i}}}_{\text{standardized residual}}\)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;color: slategray !important;">
+Influential Points
+</td>
+<td style="text-align:left;">
+<span class="math inline">\(\underbrace{D_i = \frac{1}{p}r_i^2\frac{h_i}{1-{h_i}}}_{\text{Cook&#39;s Distance}}\)</span>
+</td>
+</tr>
+</tbody>
+</table>
+<hr />
+</div>
+</div>
+<div id="packages" class="section level2">
+<h2>Packages</h2>
+<p>In this lab we will work with the packages <code>faraway</code> and <code>visdat</code>.</p>
+<pre class="r"><code>library(faraway) 
+library(visdat)</code></pre>
+<div id="data" class="section level3">
+<h3>Data</h3>
+<p>We will work with the data frame <code>mammalsleep</code>, from the faraway package. To load the data add the following to the .Rmd file:</p>
+<pre class="r"><code>data(&quot;mammalsleep&quot;)</code></pre>
+<p>To find out more about the dataset, type the following in your Console: ?mammalsleep. A question mark before the name of an object will always bring up its help file. This command must be ran in the Console.</p>
+<div id="a-description-of-the-data" class="section level4">
+<h4>A description of the data:</h4>
+<p>The mammalsleep dataframe holds data for the study of sleep in mammals. The data frame contains 62 observations and 10 variables. The variables include <code>body</code> in kg, <code>brain</code> in g, <code>nondream</code> (hrs/day), <code>dream</code> (hrs/day), <code>sleep</code> (hrs/day), <code>lifespan</code> in years, <code>gestation</code> time in days, <code>predation</code> index, <code>exposure</code> index, and <code>danger</code> index.</p>
 <hr />
 </div>
 </div>
 </div>
-<div id="bias" class="section level2">
-<h2>Bias:</h2>
-<p>Next, we learn what it means to be biased. In the following, we show how to prove that <span class="math inline">\(\hat \beta\)</span> is an <strong>unbiased estimator</strong>.</p>
-<p><span class="math display">\[
-\begin{align}
-\rm{if} \quad \mathbf{E[\hat \beta - \beta]} &amp;= 0  \\
-\\
-\rm{then} \quad \large\mathbf{\hat\beta} &amp;\, \small\textrm{ is an unbiased estimator} 
-\end{align}
-\]</span></p>
-<p>Hence, the above proves <span class="math inline">\(\hat \beta\)</span> is an unbiased estimator for the parameter <span class="math inline">\(\beta\)</span>.</p>
-<p>Following this logic, it’s also important to discuss what it means to get the minimal variance. In doing so, we reuse the <span class="math inline">\(\mathrm{var}\mathbf{(\hat \beta)}\)</span> formula to establish the following inequality that defines what it means to be <span class="math inline">\({\color{Blue}{\texttt BLUE}}\)</span>.</p>
-<div id="gauss-markov-theorem" class="section level3">
-<h3>Gauss Markov Theorem:</h3>
-<p><span class="math inline">\({\color{Blue}{\texttt BLUE}}\)</span> is the best linear unbiased estimator. We know the Least Squares Estimation returns the <strong>best linear unbiased estimator</strong> <span class="math inline">\(\mathbf{\hat \beta}\)</span>, but how can we <strong>prove</strong> this?</p>
-<p><span class="math display">\[\large \textrm{var}(\color{Blue}{\hat\beta}) = \color{Teal}{\hat\sigma^2} (\mathbf{X}^T\mathbf{X})^{-1}\leq \textrm{var}(\color{HotPink}{\tilde\beta})\]</span></p>
-<p>We want to prove what it means to be the <strong>best</strong> linear unbiased estimator. Hence, we want to show that <span class="math inline">\(\hat \beta\)</span> is better than some other parameter <span class="math inline">\(\tilde \beta\)</span> using the following inequality:</p>
-<p><span class="math display">\[\mathrm{var}(\hat\beta)=\hat \sigma^2(X^TX)^{-1} \le{\mathrm{var}(\bar \beta)}\]</span></p>
-<p>To solve this inequality, we need to use our information that we learned about <strong>bias</strong> to show that <span class="math inline">\(\tilde\beta\)</span> is unbiased:</p>
-<p><span class="math display">\[\bf E[\bar\beta - \beta]=0\]</span></p>
-<p>Next, in order to compare our <span class="math inline">\(\hat\beta\)</span> obtained from the <strong>least squares estimation</strong> to an unbiased linear estimator <span class="math inline">\(\tilde\beta\)</span>, we must show the variance of <span class="math inline">\(\tilde\beta\)</span> using our Variance/Covariance rules. As a result, we can show that our <span class="math inline">\(\hat \beta\)</span> variance is smaller or equal to the variance of <span class="math inline">\(\bar \beta\)</span> for all cases.</p>
+<div id="conceptual-exercises" class="section level2">
+<h2>Conceptual Exercises</h2>
+<p>In the following, we want to find the best fitted model for predicting <strong>sleep</strong>.</p>
+<div id="run-a-visdat-analysis-on-the-data" class="section level3">
+<h3>1. Run a <code>visdat</code> analysis on the data</h3>
+<p>We can use the visdat package to visualize the mammalsleep dataset as follows:</p>
+<div class="figure" style="text-align: center">
+<img src="01-index_files/figure-html/Visdat-1.png" alt="From the visdat output, we can see the number of missing values for the variables nondream, sleep, lifespan, and gestation." width="500" />
+<p class="caption">
+From the visdat output, we can see the number of missing values for the variables nondream, sleep, lifespan, and gestation.
+</p>
+</div>
+<hr />
+</div>
+<div id="fit-a-squares-regression-model-to-predict-sleep" class="section level3">
+<h3>2. Fit a squares regression model to predict Sleep</h3>
+<p>We have a dataset that contains 62 observations, and we will be using 7 variables in our model: body weight, brain weight, lifespan, gestation time, prediction index, sleep exposure index, and danger We removed observations with missing values for the outcome sleep and the predictors lifespan, or gestation.</p>
+<pre class="r"><code>mod &lt;- lm(sleep ~ body + brain + lifespan + gestation +
+            predation + exposure + danger, 
+          data = df)</code></pre>
+<hr />
+</div>
+<div id="test-the-model-assumptions" class="section level3">
+<h3>3. Test the model assumptions</h3>
+<div id="constant-variance-assumption" class="section level4">
+<h4>Constant Variance Assumption</h4>
+<div class="figure" style="text-align: center">
+<img src="01-index_files/figure-html/Resid-Fit-1.png" alt="Residuals vs. Fits plot to examine non-linearity and constant variance assumptions." width="500" />
+<p class="caption">
+Residuals vs. Fits plot to examine non-linearity and constant variance assumptions.
+</p>
+</div>
+<p>From the above Residuals vs. Fits plot, there aren’t enough observations to make a sound conclusion. Linearity looks okay. Though, we should be a little worried about the constant variance assumption because it seems the points fan out from a thinner to a wider extent.</p>
+<p> </p>
+</div>
+<div id="normality-assumption" class="section level4">
+<h4>Normality Assumption</h4>
+<div class="figure" style="text-align: center">
+<img src="01-index_files/figure-html/Normality-1.png" alt="Q-Q plot to check normality of the residuals" width="500" />
+<p class="caption">
+Q-Q plot to check normality of the residuals
+</p>
+</div>
+<p>There seems to be a little deviation for the upper plot, which suggests that there are outliers present. So, maybe we should use a different model.</p>
+<p> </p>
 <hr />
 </div>
 </div>
-<div id="residual-sum-of-squares" class="section level2">
-<h2>Residual Sum of Squares</h2>
-<p>Next, we learned about the <strong>Residual Sum of Squares(RSS)</strong>, which is the sum of the residuals squared.</p>
-<p><span class="math display">\[\mathbf{RSS}=\sum{e^2}\]</span></p>
-<p>We use the Matrix Rules to be able to get various pieces of the RSS. For example, we showed the excepted value of the RSS:</p>
-<p><span class="math display">\[E[e^Te]=\sigma^2(n-(p+1))\]</span></p>
-<p>We got this using the Trace and idempotent rules.</p>
-<p><span class="math display">\[E[e^Te]=E\mathbf{[y^T(I-H)y]}\]</span></p>
-<p>When taking the expected value of the RSS, we used an expected value rule we already know about <span class="math inline">\(\mathbf{[y^T(I-H)y]}\)</span>. We also used that idempotent rule to reduce the <span class="math inline">\(I-H\)</span> term. The purpose of finding the residual sum of squares and its expected value is to get a good estimate for <span class="math inline">\(\hat \sigma^2\)</span>:</p>
-<p><span class="math display">\[\hat \sigma^2 = \frac{RSS}{(n-(p+1))}\]</span></p>
-<p>To derive this, we needed the fact that <span class="math inline">\(\mathbf{I-H}\)</span> is idempotent and the rule where we can take the expected value of a particular form of matrices that involves the <strong>trace</strong>. We then talk about what the trace is and how we can estimate it for the hat matrix as well for the identity matrix, which is how we got the <span class="math inline">\(\mathbf{(n-(p+1))}\)</span> piece. The <span class="math inline">\(\hat \sigma^2\)</span> value is an important piece for calculating the variance and covariance and variance/covariance matrix for the variance of <span class="math inline">\(\hat \beta\)</span>:</p>
-<p><span class="math display">\[\mathrm{var}(\hat \beta)=\hat \sigma^2(X^TX)^{-1}\]</span></p>
-<hr />
+<div id="test-the-transformed-model-assumptions" class="section level3">
+<h3>4. Test the transformed model assumptions</h3>
+<div id="take-the-log-of-the-predictor" class="section level4">
+<h4>Take the log of the predictor:</h4>
+<pre class="r"><code>modLog &lt;- lm(log(sleep) ~ body + brain + lifespan + gestation +
+            predation + exposure + danger, 
+          data = df)</code></pre>
 </div>
-<div id="hypothesis-testing" class="section level2">
-<h2>Hypothesis Testing</h2>
-<p>When comparing different models, it’s often that we want to compare a small model to a larger one. We can now compare the RSS of the two models! In linear regression, the goal is to minimize the <span class="math inline">\(\mathbf{RSS}\)</span> and establish a model of fewest explanatory variables <span class="math inline">\(\mathbf{X_i}\)</span>. So if <span class="math inline">\(RSS_{small}-RSS_{larger}\)</span> is small, then the fit of the small model is almost as good as the larger one.</p>
-<ol style="list-style-type: lower-alpha">
-<li>Is the model better than an intercept only model?</li>
-</ol>
-<p><span class="math display">\[
-\begin{align}
-\mathbf{H_0}&amp;: \beta_1 = \beta_2 = {\ldots} = \beta_p = 0 \\
-\mathbf{H_A}&amp;: \small\text{the models are not equal}
-\end{align}
-\]</span></p>
-<p>Let’s create an F-Statistic so we can compare to the F-distribtion!</p>
-<div id="f-statistic" class="section level3">
-<h3>F-Statistic</h3>
-<p><span class="math display">\[F = \frac{RSS_{small} - RSS_{larger} / (df_{small}- df_{larger})}{RSS_{larger}/df_{larger}}\sim F_{df_{small}- df_{larger}, df_{larger}}\]</span></p>
-<p>When comparing two linear regression models, we use the <strong>F-test</strong> as a way to compare a small model to a large model. A big part of the F test is the residuals sum of squares. So it’s important to know how to get the RSS and its expected value. Based on the hypothesis testing, we can determine whether or not to fail to reject the null hypothesis (two models are the same) or reject our null hypothesis (two models are different).</p>
-<div id="summary-1" class="section level4">
-<h4>Summary:</h4>
-<p><strong>F tests</strong> are important because they let us do <strong>hypothesis testing</strong>. The F-test gives us a way to systematically compare a small model to a large model. The hypothesis test gives us a way to see if the two models are equal, i.e. if the small model is just as good as the large model. The F test is a built framework that uses the f-distribution, which can be used to find a good cut off for our hypothesis test to determine whether we can reject our null hypothesis that the models are the same.</p>
+<div id="test-the-model-assumptions-1" class="section level4">
+<h4>Test the model assumptions:</h4>
+<div class="figure" style="text-align: center">
+<img src="01-index_files/figure-html/Resid-Fit-Log-1.png" alt="Residuals vs. Fits plot to examine non-linearity and constant variance assumptions and Q-Q plot to check normality of the residuals" width="330" /><img src="01-index_files/figure-html/Resid-Fit-Log-2.png" alt="Residuals vs. Fits plot to examine non-linearity and constant variance assumptions and Q-Q plot to check normality of the residuals" width="330" />
+<p class="caption">
+Residuals vs. Fits plot to examine non-linearity and constant variance assumptions and Q-Q plot to check normality of the residuals
+</p>
 </div>
-<div id="example" class="section level4">
-<h4>Example:</h4>
-<p>If we’re only given the value of estimate <span class="math inline">\(\mathbf{\hat \sigma ^2}\)</span>, how can we get the <span class="math inline">\(\mathbf{RSS}\)</span>?</p>
-<p>This example illustrates why we need an estimate of <span class="math inline">\(\hat \sigma^2\)</span> because, if we didn’t know <span class="math inline">\(\mathit{RSS}\)</span>, we do know that our estimate <span class="math inline">\(\hat \sigma^2 =\frac{\mathbf{RSS}}{(n-(p+1))}\)</span>, which we can then get <span class="math inline">\(\mathit{RSS}\)</span> by estimating <span class="math inline">\(E[e^Te]=\mathbf{\sigma^2}(n-(p+1))\)</span>.</p>
+<p>Looking at the different plots, we can see that there are no significant improvements between the two models. Therefore, we will stick to the original squares regression model. Because we have a relatively small sample of 61 observations, we might violate some of the assumptions.</p>
 <hr />
 </div>
 </div>
+<div id="interpret-the-models-coefficients" class="section level3">
+<h3>5. Interpret the Model’s Coefficients</h3>
+<div id="forest-plot" class="section level4">
+<h4>Forest Plot</h4>
+<div class="figure" style="text-align: center">
+<img src="01-index_files/figure-html/Forest-Plot-1.png" alt="Forest Plot" width="500" />
+<p class="caption">
+Forest Plot
+</p>
 </div>
-<div id="confidence-intervals" class="section level2">
-<h2>Confidence Intervals</h2>
-<p><strong>Definition.</strong> If we use the same sampling method to select different samples and computed an interval estimate for each sample, we would expect the true population parameter (<span class="math inline">\(\beta_1\)</span>) to fall within the interval estimates 95% of the time.</p>
-<p><span class="math display">\[\Large\hat\beta\pm t^*SE_{\hat\beta}\]</span></p>
-<p><strong>Confidence intervals</strong> are a way to quantify our <strong>uncertainty</strong>. The confidence interval takes the <span class="math inline">\(\hat \beta\)</span> from our least squares estimation <span class="math inline">\(\pm\)</span> <span class="math inline">\(t^*\)</span>, which comes from our t-distribution, multiplied by the standard error of <span class="math inline">\(\hat \beta\)</span> <span class="math inline">\(\mathbf{SE_{\hat \beta}}\)</span>.</p>
-<p><span class="math display">\[\hat\beta\pm t^*SE_{\hat\beta}\]</span></p>
-<p>Suppose we select a different sample of size <span class="math inline">\(\mathcal{n}\)</span> from the same population and compute <span class="math inline">\(\mathcal{n}\)</span> new interval estimates. Each one of those <span class="math inline">\(\mathcal{n}\)</span> interval estimates would be different. We would expect that <strong>95%</strong> of those <span class="math inline">\(\mathcal{n}\)</span> would contain the true population parameter for that <span class="math inline">\(\beta\)</span> coefficient.</p>
+<p>It looks like there are two important variables: predation index and danger index. If we’re already including danger and predation, we don’t necessarily need to include the sleep exposure index.</p>
+</div>
+<div id="final-model" class="section level4">
+<h4>Final Model:</h4>
+<p>We choose not to include the sleep exposure index because the danger index is a combination of the predation and exposure index. Therefore, the danger index consists of the information we might gain from exposure.</p>
+<pre class="r"><code>mod &lt;- lm(sleep ~ body + brain + lifespan + gestation +
+            predation + danger, 
+          data = df)
+
+mod_table &lt;- tidy(mod, conf.int = TRUE)</code></pre>
+<table class="table table-striped" style="font-size: 13px; width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="empty-cells: hide;border-bottom:hidden;" colspan="5">
+</th>
+<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; color: slategray !important;" colspan="2">
+<div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
+95% Confidence Interval
+</div>
+</th>
+</tr>
+<tr>
+<th style="text-align:left;color: darkslategray !important;font-size: 14px;">
+Term
+</th>
+<th style="text-align:right;color: darkslategray !important;font-size: 14px;">
+Estimate
+</th>
+<th style="text-align:right;color: darkslategray !important;font-size: 14px;">
+SE
+</th>
+<th style="text-align:right;color: darkslategray !important;font-size: 14px;">
+Statistic
+</th>
+<th style="text-align:right;color: darkslategray !important;font-size: 14px;">
+p-value
+</th>
+<th style="text-align:right;color: darkslategray !important;font-size: 14px;">
+Lower Bound
+</th>
+<th style="text-align:right;color: darkslategray !important;font-size: 14px;">
+Upper Bound
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;color: orchid !important;">
+(Intercept)
+</td>
+<td style="text-align:right;">
+16.49
+</td>
+<td style="text-align:right;">
+1.08
+</td>
+<td style="text-align:right;">
+15.31
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+14.32
+</td>
+<td style="text-align:right;">
+18.67
+</td>
+</tr>
+<tr>
+<td style="text-align:left;color: orchid !important;">
+body
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+-0.80
+</td>
+<td style="text-align:right;">
+0.43
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;color: orchid !important;">
+brain
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+1.14
+</td>
+<td style="text-align:right;">
+0.26
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;color: orchid !important;">
+lifespan
+</td>
+<td style="text-align:right;">
+-0.03
+</td>
+<td style="text-align:right;">
+0.03
+</td>
+<td style="text-align:right;">
+-0.86
+</td>
+<td style="text-align:right;">
+0.39
+</td>
+<td style="text-align:right;">
+-0.10
+</td>
+<td style="text-align:right;">
+0.04
+</td>
+</tr>
+<tr>
+<td style="text-align:left;color: orchid !important;">
+gestation
+</td>
+<td style="text-align:right;">
+-0.01
+</td>
+<td style="text-align:right;">
+0.01
+</td>
+<td style="text-align:right;">
+-2.39
+</td>
+<td style="text-align:right;">
+0.02
+</td>
+<td style="text-align:right;">
+-0.03
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;color: orchid !important;">
+predation
+</td>
+<td style="text-align:right;">
+2.18
+</td>
+<td style="text-align:right;">
+0.95
+</td>
+<td style="text-align:right;">
+2.28
+</td>
+<td style="text-align:right;">
+0.03
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+4.10
+</td>
+</tr>
+<tr>
+<td style="text-align:left;color: orchid !important;">
+danger
+</td>
+<td style="text-align:right;">
+-3.83
+</td>
+<td style="text-align:right;">
+1.03
+</td>
+<td style="text-align:right;">
+-3.73
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+-5.91
+</td>
+<td style="text-align:right;">
+-1.76
+</td>
+</tr>
+</tbody>
+</table>
+<p>The variables body, brain, and lifespan have little impact on sleep duration when adjusting for body, brain, lifespan, gestation, predation, and danger, all with coefficients very close to <span class="math inline">\(0\)</span>.</p>
+<ul>
+<li>A one day increase in lifespan yields an expected change in total sleep hours per day of <span class="math inline">\(-0.03\)</span> (95% CI: -0.10, 0.04) holding all other variables at constant.</li>
+<li>A one day increase in gestation time yields an expected change in total sleep hours per day of <span class="math inline">\(-0.01\)</span> (95% CI: -0.03, 0) holding all other variables at constant.</li>
+<li>A one unit change in predation index yields an expected change in total sleep of <span class="math inline">\(2.18\)</span> (95% CI: 0.25, 4.1) hours per day holding all other variables constant.</li>
+<li>A one unit change in danger index yields an expected change in total sleep of <span class="math inline">\(-3.83\)</span> (95% CI: -5.91, -1.76) hours per day holding all other variables constant.</li>
+</ul>
+<p><span class="math display">\[\hat Y = 16.49 - 0.001 X_1 + 0.002 X_2 - 0.03 X_3 - 0.01 X_4 + 2.18 X_5 - 3.83 X_6 + \varepsilon_{|x,i}\]</span></p>
 <hr />
 </div>
-<div id="more-on-confidence-intervals" class="section level2">
-<h2>More on Confidence Intervals</h2>
-<p><strong>Run a simulation to generate 100 confidence intervals by sampling from a “true” population</strong></p>
-<p>In the following example, we are interested in illustrating the relationship between <strong>Age</strong> and <strong>Wage</strong>.</p>
-<div class="b2">
-<p><span class="math display">\[\text{Wage} ={\bf \beta_1}\times\text{Age} + \epsilon\\\]</span> <span class="math display">\[\small{\mathbf{\beta_1}\Rightarrow\small{\text{true parameter for the relationship between Age and Wage}}}\]</span></p>
-</div>
-<div class="b01">
-<p><span class="math display">\[
-\begin{align}
-\Rightarrow \,&amp; \text{Age} \approx \text{Normal} (30,10) \\
-\Rightarrow \,&amp; \epsilon \approx \text{Normal}(0,10) \\
-\Rightarrow \,&amp; \text{Sample } \texttt{n}=100
-\end{align}
-\]</span></p>
-</div>
-<p> </p>
-<p>From the above equation, suppose <span class="math inline">\(\beta_1=2\)</span>,</p>
-<div class="a1">
-<p><span class="math display">\[\mathrm{Wage} = \mathbf{2}\times\mathrm{Age} + \epsilon\]</span> <span class="math display">\[\small{\Rightarrow \beta_1} = \mathbf{2}\]</span></p>
-</div>
-<p> </p>
-<div id="generate-two-different-samples" class="section level3">
-<h3>Generate Two Different Samples</h3>
-<p>In the following, we generate a sample of 100 people (n). The <code>set.seed()</code> function makes it so that the method produces the same answer, and the <code>rnorm</code> function pulls a random normal variable.</p>
-<p><strong>Sample 1:</strong></p>
-<pre><code>##        Age      Wage
-## 1 52.87247 110.93553
-## 2 18.03228  41.93996
-## 3 23.05707  45.32082
-## 4 25.87707  40.01053
-## 5 20.29327  43.67375
-## 6 20.52720  25.01562</code></pre>
-<p><strong>Sample 2:</strong></p>
-<pre><code>##        Age      Wage
-## 1 50.23344 105.71950
-## 2 38.62492  74.49258
-## 3 29.75091  60.04891
-## 4 36.00635  68.13020
-## 5 42.16481  80.15938
-## 6 18.23468  24.82762</code></pre>
-</div>
-<div id="compare-intervals-to-the-true-parameter" class="section level3">
-<h3>Compare intervals to the “true parameter”</h3>
-<p>In the following, we use the <code>lm</code> function to fit two linear models using the two different samples we generated above. Next, we use the <code>confint</code> function to compute the confidence intervals of one or more parameters for each of the fitted models.</p>
-<p><strong>Fit linear models:</strong></p>
-<p><strong>Compute the confidence intervals:</strong></p>
-<p> </p>
-<pre><code>##                 2.5 %   97.5 %
-## (Intercept) -5.513397 7.503540
-## Age          1.811456 2.208256</code></pre>
-<p> </p>
-<div class="a1">
-<p><span class="math display">\[\texttt{95% CI}: (1.81, 2.21)\]</span> Our true parameter is <span class="math inline">\(\mathbf{2}\)</span>, which is a fixed number that falls within this above confidence interval estimate. Hence, sample 1 accurately captures an interval that contains the true parameter <span class="math inline">\(\mathbf{2}\)</span>.</p>
-</div>
-<p> </p>
-<pre><code>##                 2.5 %   97.5 %
-## (Intercept) -8.880926 3.241064
-## Age          1.885782 2.270270</code></pre>
-<p> </p>
-<div class="a1">
-<p><span class="math display">\[\texttt{95% CI}: (1.89, 2.27)\]</span> Our true parameter is <span class="math inline">\(\mathbf{2}\)</span>, which is a fixed number that falls within this above confidence interval estimate. Hence, sample 2 accurately captures an interval that contains the true parameter <span class="math inline">\(\mathbf{2}\)</span>.</p>
-</div>
-<p> </p>
-</div>
-<div id="generate-100-confidence-intervals" class="section level3">
-<h3>Generate 100 Confidence Intervals:</h3>
-<p>In the following, we create the <code>get_ci</code> function to generate a random sample, fit a model predicting the relationship between <code>Wage</code> and <code>Age</code>, and return the confidence interval for the model. We then use the <code>purrr</code> package to run this simulation to generate 100 confidence intervals by sampling from a “true” population.</p>
-<p> </p>
-<p> </p>
-</div>
-<div id="plot-the-100-confidence-intervals" class="section level3">
-<h3>Plot the 100 Confidence Intervals:</h3>
-<p>In the following code, we use the <code>ggplot</code> function to plot 100 simulated intervals from above.</p>
-<p><img src="01-index_files/figure-html/plot-1.png" width="450" style="display: block; margin: auto;" /></p>
-<p><strong>What percent of the intervals contain the true parameter <span class="math inline">\(\mathbf{2}\)</span>?</strong></p>
-<p><span class="math display">\[\frac{95 \small\text{ intervals}}{100\small\text{ intervals}}=95\texttt{%}\]</span></p>
-<p>In the above exercise, we’re selecting 100 different samples and computing each of their interval estimates in order to get an approximation as close to the true population parameter. The figure we created above plots 100 simulated intervals represented by horizontal lines where the <span style="color:#001d47;"><strong>black</strong></span> lines represent the intervals that contain the true parameter <span class="math inline">\(\mathbf{2}\)</span> and the <span style="color:#ff66ad;"><strong>red</strong></span> lines represent the intervals that do <strong>not</strong> contain the true parameter. From the figure, we can calculate the percent of the intervals that contain the true parameter <span class="math inline">\(\mathbf{2}\)</span> by dividing all of the black lines by the total number of lines: <span class="math inline">\(\frac{95}{100}=95\texttt{%}\)</span>.</p>
-<hr />
 </div>
 </div>
 <div id="code-appendix" class="section level2">
 <h2>Code Appendix</h2>
-<pre class="r"><code>library(knitr)
-knitr::opts_chunk$set(echo = FALSE, eval = TRUE, message = FALSE)
-library(purrr)
+<pre class="r"><code>knitr::opts_chunk$set(out.width = 500,fig.align = &quot;center&quot;, message = FALSE, warning = FALSE, echo = FALSE)
 library(ggplot2)
-set.seed(7)
-n &lt;- 100 ## sample 100 people
-sample &lt;- data.frame(
-  Age = rnorm(n,  mean = 30,  sd = 10)
+library(broom)
+library(kableExtra)
+library(knitr)
+mod_table &lt;- data.frame(&quot;Assumptions&quot; = 
+             c(&quot;Linearity&quot;,
+               &quot;Constant Variance&quot;,
+               &quot;Normality&quot;,
+               &quot;Correlated Errors&quot; ),
+           &quot;Checking Assumptions&quot; = 
+             c(&quot;Residuals vs. Fits Plots&quot;,
+               &quot;Residuals vs. Fits Plots&quot;,
+               &quot;Q-Q Plot&quot;,
+               &quot;Structure of the data&quot; ),
+           &quot;Fixing Violations&quot; = 
+             c(&quot;Transformations&quot;,
+               &quot;Weighted/Generalized Least Squares (WLS/GLS)&quot;,
+               &quot;Robust Regression&quot;,
+               &quot;Generalized Least Squares (GLS)&quot; )
+           )
+
+kable(mod_table, col.names = 
+        c(&quot;Assumptions&quot;, &quot;Checking Assumptions&quot;, &quot;Fixing Violated Assumptions&quot;)) %&gt;%
+  kable_styling(full_width = FALSE, font_size = 14, bootstrap_options = &quot;striped&quot;) %&gt;%
+  collapse_rows(1) %&gt;%
+  row_spec(0, color = &quot;darkseagreen&quot;) %&gt;%
+  column_spec(1, color = &quot;slategray&quot;)
+mod_table &lt;- data.frame(&quot;Unusual Observations&quot; = 
+             c(&quot;Leverage&quot;,
+               &quot;Outliers&quot;,
+               &quot;Influential Points&quot;),
+             &quot;Calculated&quot; = 
+               c(&quot;$\\underbrace{H_{ii} = h_i}_{\\text{diagonals of the hat matrix}}$&quot;,
+                 &quot;$\\underbrace{r_i = \\frac{e_i}{s_e\\sqrt{1 - h_i}}}_{\\text{standardized residual}}$&quot;,
+                 &quot;$\\underbrace{D_i = \\frac{1}{p}r_i^2\\frac{h_i}{1-{h_i}}}_{\\text{Cook&#39;s Distance}}$&quot;)
+           )
+
+kable(mod_table, col.names = 
+        c(&quot;Unusual Observations&quot;, &quot;Calculated As&quot;)) %&gt;%
+  kable_styling(full_width = FALSE, font_size = 14, bootstrap_options = &quot;striped&quot;) %&gt;%
+  collapse_rows(1) %&gt;%
+  row_spec(0, color = &quot;darkseagreen&quot;) %&gt;%
+  column_spec(1, color = &quot;slategray&quot;)
+library(faraway) 
+library(visdat)
+data(&quot;mammalsleep&quot;)
+?mammalsleep
+vis_dat(mammalsleep)
+df &lt;- mammalsleep[(!is.na(mammalsleep$sleep) &amp;
+                     !is.na(mammalsleep$lifespan) &amp;
+                     !is.na(mammalsleep$gestation)),
+                  ]
+mod &lt;- lm(sleep ~ body + brain + lifespan + gestation +
+            predation + exposure + danger, 
+          data = df)
+check &lt;- data.frame(
+  e = resid(mod),
+  fit = fitted(mod)
 )
-sample$Wage &lt;- 2 * sample$Age + rnorm(n, mean = 0, sd = 10)
-head(sample)
-n &lt;- 100
-sample2 &lt;- data.frame(
-  Age = rnorm(n, mean = 30, sd = 10)
+
+ggplot(check, aes(x = fit, y = e)) +
+         geom_point() +
+         geom_hline(yintercept = 0, 
+                    col = &quot;plum&quot;) +
+  labs(y = &quot;Residuals&quot;, x = &quot;Fitted Values&quot;) +
+  theme_minimal()
+ggplot(check, aes(sample = e)) +
+  geom_qq() + 
+  geom_qq_line(color=&quot;darkseagreen&quot;) +
+  theme_minimal()
+modLog &lt;- lm(log(sleep) ~ body + brain + lifespan + gestation +
+            predation + exposure + danger, 
+          data = df)
+checkLog &lt;- data.frame(
+  e = resid(modLog),
+  fit = fitted(modLog)
 )
-sample2$Wage &lt;- 2 * sample2$Age + rnorm(n, 0, 10) 
-head(sample2)
-Model &lt;- lm(Wage ~ Age, data = sample) ## Sample 1
-Model2 &lt;- lm(Wage ~ Age, data = sample2) ## Sample 2
-confint(Model)
-confint(Model2)
-get_ci &lt;- function(id) {
-  sample &lt;- data.frame(
-    Age = rnorm(n, mean = 30, sd = 10)
-  )
-  sample$Wage &lt;- 2* sample$Age + rnorm(n, 0, 10)
-  model &lt;- lm(Wage ~ Age, data = sample)
-  return(
-    data.frame(
-      lb = confint(model)[2,1],
-      ub = confint(model)[2,2],
-      id = id
-    ))}
-## map function call 100 times
-set.seed(7)
-ci &lt;- map_df(1:100, get_ci)
-ggplot(ci, aes(y = id, color = (lb &gt; 2 | ub &lt; 2))) + 
-  geom_linerange(aes(xmin = lb, xmax = ub)) +
-  geom_vline(xintercept = 2, lty=2) +
-  scale_color_manual(values = c(&quot;black&quot;, &quot;#ff66ad&quot;)) +
-  theme(legend.position = &quot;none&quot;)</code></pre>
+
+ggplot(checkLog, aes(x = fit, y = e)) +
+         geom_point() +
+         geom_hline(yintercept = 0, 
+                    col = &quot;plum&quot;) +
+  labs(y = &quot;Residuals&quot;, x = &quot;Fitted Values&quot;) +
+  theme_minimal()
+
+ggplot(checkLog, aes(sample = e)) +
+  geom_qq() + 
+  geom_qq_line(color=&quot;darkseagreen&quot;) +
+  theme_minimal()
+mod &lt;- lm(sleep ~ body + brain + lifespan + gestation +
+            predation + exposure + danger, 
+          data = df)
+
+mod_table &lt;- tidy(mod, conf.int = TRUE)
+ggplot(mod_table[-1, ], aes(x = term, y = estimate,
+                      ymin = conf.low, ymax = conf.high)) +
+  geom_pointrange() + 
+  geom_hline(yintercept = 0, lty = 2, color = &quot;aquamarine4&quot;) +
+  coord_flip()
+mod &lt;- lm(sleep ~ body + brain + lifespan + gestation +
+            predation + danger, 
+          data = df)
+
+mod_table &lt;- tidy(mod, conf.int = TRUE)
+kable(mod_table, digits = 2, 
+      col.names = c(&quot;Term&quot;, &quot;Estimate&quot;, &quot;SE&quot;, &quot;Statistic&quot;, &quot;p-value&quot;, &quot;Lower Bound&quot;, &quot;Upper Bound&quot;)) %&gt;%
+  kable_styling(full_width = FALSE, 
+                font_size = 13,
+                bootstrap_options = &quot;striped&quot;) %&gt;%
+  collapse_rows(1, latex_hline = &#39;major&#39;) %&gt;%
+  column_spec(1, color = &quot;orchid&quot;) %&gt;%
+  row_spec(0, font_size=14, color = &quot;darkslategray&quot;) %&gt;%
+  add_header_above(c(&quot; &quot; = 5, &quot;95% Confidence Interval&quot; = 2), 
+                   color = c(&quot;black&quot;, &quot;slategray&quot;))</code></pre>
 <hr />
 </div>
 <div id="references" class="section level2 unnumbered">

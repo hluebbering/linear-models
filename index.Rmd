@@ -1,5 +1,5 @@
 ---
-title: "Model Diagnostics"
+title: "Linear Modeling in R"
 output:
   html_document: 
     css: ./assets/styles1.css
@@ -14,311 +14,650 @@ nocite: '@*'
 
 
 ```{r include=FALSE}
-knitr::opts_chunk$set(out.width = 500,fig.align = "center", message = FALSE, warning = FALSE, echo = FALSE)
-library(ggplot2)
-library(broom)
-library(kableExtra)
 library(knitr)
-```
-
-
------------------------------
-
-
-## Checking Assumptions
-
-
-
-```{r AssumptionsCheck}
-mod_table <- data.frame("Assumptions" = 
-             c("Linearity",
-               "Constant Variance",
-               "Normality",
-               "Correlated Errors" ),
-           "Checking Assumptions" = 
-             c("Residuals vs. Fits Plots",
-               "Residuals vs. Fits Plots",
-               "Q-Q Plot",
-               "Structure of the data" ),
-           "Fixing Violations" = 
-             c("Transformations",
-               "Weighted/Generalized Least Squares (WLS/GLS)",
-               "Robust Regression",
-               "Generalized Least Squares (GLS)" )
-           )
-
-kable(mod_table, col.names = 
-        c("Assumptions", "Checking Assumptions", "Fixing Violated Assumptions")) %>%
-  kable_styling(full_width = FALSE, font_size = 14, bootstrap_options = "striped") %>%
-  collapse_rows(1) %>%
-  row_spec(0, color = "darkseagreen") %>%
-  column_spec(1, color = "slategray")
+knitr::opts_chunk$set(echo = FALSE, eval = TRUE, message = FALSE)
 ```
 
 
 
+## Random Matrices:
 
-### Unusual Observations
-
-
-```{r Observations}
-mod_table <- data.frame("Unusual Observations" = 
-             c("Leverage",
-               "Outliers",
-               "Influential Points"),
-             "Calculated" = 
-               c("$\\underbrace{H_{ii} = h_i}_{\\text{diagonals of the hat matrix}}$",
-                 "$\\underbrace{r_i = \\frac{e_i}{s_e\\sqrt{1 - h_i}}}_{\\text{standardized residual}}$",
-                 "$\\underbrace{D_i = \\frac{1}{p}r_i^2\\frac{h_i}{1-{h_i}}}_{\\text{Cook's Distance}}$")
-           )
-
-kable(mod_table, col.names = 
-        c("Unusual Observations", "Calculated As")) %>%
-  kable_styling(full_width = FALSE, font_size = 14, bootstrap_options = "striped") %>%
-  collapse_rows(1) %>%
-  row_spec(0, color = "darkseagreen") %>%
-  column_spec(1, color = "slategray")
-```
+In Linear Modeling, we begin by discussing Matrix Rules and Properties and learning about **Excepted Values** and **Covariances**, and **Variances**, all of which are Random Matrices.
 
 
 
+<span class="sp5">a.</span> **Expectation** describes the average value
 
-----------------------------
-
-
-## Packages
-
-In this lab we will work with the packages `faraway` and `visdat`.
-
-```{r Load-Packages, echo=TRUE}
-library(faraway) 
-library(visdat)
-```
+$$E[X] = \begin{cases}
+\sum_x xp_X(x) & X \textrm{ is a discrete random variable}\\
+\int_{-\infty}^{\infty}xf_X(x)dx & X \textrm{ is a continuous random variable}
+\end{cases}$$
 
 
+<span class="sp5">b.</span> **Covariance** is a measure of joint variability between two random variables
 
-### Data
+$$cov(\mathbf{X},\mathbf{Y}) = E[(\mathbf{X} - E[\mathbf{X}])(\mathbf{Y} - E[\mathbf{Y}])]$$
 
-We will work with the data frame `mammalsleep`, from the faraway package. To load the data add the following to the .Rmd file:
+<span class="sp5">c.</span> **Variance** measures the spread of a variable
 
-
-```{r Load-Data, echo=TRUE}
-data("mammalsleep")
-```
+$$var(\mathbf{X}) = cov(\mathbf{X}, \mathbf{X}) = E[\mathbf{X}^2] - E[\mathbf{X}]^2$$
 
 
-
-To find out more about the dataset, type the following in your Console: ?mammalsleep. A question mark before the name of an object will always bring up its help file. This command must be ran in the Console.
-
-
-#### A description of the data:
-
-```{r DataFrame}
-?mammalsleep
-```
+### Least Squares Estimation:
 
 
-The mammalsleep dataframe holds data for the study of sleep in mammals. The data frame contains 62 observations and 10 variables. The variables include `body` in kg, `brain` in g, `nondream` (hrs/day), `dream` (hrs/day), `sleep` (hrs/day), `lifespan` in years, `gestation` time in days, `predation` index, `exposure` index, and `danger` index.  
+The purpose of the **least squares estimation** is to estimate the relationship between various predictor variables $X$ and an outcome variable $Y$. In using this relationship, we must understand the **Law of Total Exception** and **Law of Total Variance** rules.
 
-
------------------------------
-
-
-
-
-## Conceptual Exercises
-
-In the following, we want to find the best fitted model for predicting **sleep**. 
-
-### 1. Run a `visdat` analysis on the data
-
-We can use the visdat package to visualize the mammalsleep dataset as follows:
-
-
-
-
-```{r Visdat, fig.cap="From the visdat output, we can see the number of missing values for the variables nondream, sleep, lifespan, and gestation."}
-vis_dat(mammalsleep)
-```
-
-
-
-
------------------------------
-
-### 2. Fit a squares regression model to predict Sleep 
-
-We have a dataset that contains 62 observations, and we will be using 7 variables in our model: body weight, brain weight, lifespan, gestation time, prediction index, sleep exposure index, and danger We removed observations with missing values for the outcome sleep and the predictors lifespan, or gestation. 
-
-
-```{r Remove-Missing}
-df <- mammalsleep[(!is.na(mammalsleep$sleep) &
-                     !is.na(mammalsleep$lifespan) &
-                     !is.na(mammalsleep$gestation)),
-                  ]
-```
-
-
-```{r lmFit, echo=TRUE}
-mod <- lm(sleep ~ body + brain + lifespan + gestation +
-            predation + exposure + danger, 
-          data = df)
-```
-
-
------------------------------
-
-
-### 3. Test the model assumptions 
-
-#### Constant Variance Assumption
-
-
-```{r Resid-Fit, fig.cap = "Residuals vs. Fits plot to examine non-linearity and constant variance assumptions."}
-check <- data.frame(
-  e = resid(mod),
-  fit = fitted(mod)
-)
-
-ggplot(check, aes(x = fit, y = e)) +
-         geom_point() +
-         geom_hline(yintercept = 0, 
-                    col = "plum") +
-  labs(y = "Residuals", x = "Fitted Values") +
-  theme_minimal()
-```
-
-
-
-From the above Residuals vs. Fits plot, there aren't enough observations to make a sound conclusion. Linearity looks okay. Though, we should be a little worried about the constant variance assumption because it seems the points fan out from a thinner to a wider extent. 
 
 \ 
 
-#### Normality Assumption
+<div class="b1">
 
-```{r Normality, fig.cap = "Q-Q plot to check normality of the residuals"}
-ggplot(check, aes(sample = e)) +
-  geom_qq() + 
-  geom_qq_line(color="darkseagreen") +
-  theme_minimal()
-```
+$$\large \mathbf{y} = \mathbf{X} \beta + \epsilon$$
+
+</div>
+
+\ 
+
+As a result, we can take the **expected value** of $\hat \beta$, in which we want to show: 
+
+$$\mathbf{E[\hat{\beta}]=\beta}$$
+
+In order to prove the above equation, we must use the Law of Total Exception and various Matrix rules. We can also take the **variance of $\hat \beta$**:
 
 
-There seems to be a little deviation for the upper plot, which suggests that there are outliers present. So, maybe we should use a different model. 
+$$\rm{var}{(\mathbf{\hat \beta})} = \hat \sigma ^2 (\mathbf{X^TX})^{-1}$$
+
+In order to get the variance of $\hat \beta$, we have to calculate the variance/ covariance matrix using the properties of random matrices and the Law of Total Variance. 
+
+
+#### Summary:
+
+The overall idea of the **Law of Total Exception** and the **Law of Total Variance** rules allow us to calculate the **Expected Value** and **Variance** or our main estimator $\mathbf{\hat \beta}$ from the **Least Squares Estimator**.
+
+
+------------------------------------------------------
+
+## Deriving the Hat Matrix
+
+### Linear Regression Review
+
+
+$$
+\begin{align}
+RSS &= (\mathbf{y} - \mathbf{X}\hat\beta)^T(\mathbf{y}-\mathbf{X}\hat\beta) \\
+& = \mathbf{y}^T\mathbf{y}-\hat{\beta}^T\mathbf{X}^T\mathbf{y}-\mathbf{y}^T\mathbf{X}\hat\beta + \hat{\beta}^T\mathbf{X}^T\mathbf{X}\hat\beta\\
+&=\mathbf{y}^T\mathbf{y}-2\hat{\beta}^T\mathbf{X}^T\mathbf{y} + \hat{\beta}^T\mathbf{X}^T\mathbf{X}\hat\beta\\
+\end{align}
+$$
+
+
+To find the $\hat \beta$ that is going to minimize this RSS, 
+
+
+$$\frac{\partial RSS}{\partial\hat\beta}=-2\mathbf{X}^T\mathbf{y}+2\mathbf{X}^T\mathbf{X}\hat\beta = 0$$
+
+
+Solving for $\hat \beta$
+
+$$
+\begin{align}
+-2\mathbf{X}^T\mathbf{y}+2\mathbf{X}^T\mathbf{X}\hat\beta &= 0\\
+2\mathbf{X}^T\mathbf{X}\hat\beta & = 2\mathbf{X}^T\mathbf{y} \\
+\mathbf{X}^T\mathbf{X}\hat\beta & =\mathbf{X}^T\mathbf{y} \\
+(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{X}\hat\beta &=(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{y}\\
+\underbrace{(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{X}}_{\mathbf{I}}\hat\beta &=(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{y}\\
+\mathbf{I}\hat\beta &= (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{y}\\
+\hat\beta & = (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{y}
+\end{align}
+$$
+
+$$\large \hat\beta = {\bf (X^TX)^{-1} X^T \mathcal{y}}$$
+
+
+\ 
+
+**What is $\hat \beta$?**
+
+- The coefficient for $x$ is $\hat \beta$. A one-unit increase in $x$ yields an expected increase in $y$ of $\hat \beta$ holding all other variables constant.
+
+
+**The hat matrix puts a 🎓 on y:**
+
+
+$$
+\begin{align}
+\hat y &= Hy \\
+\hat y &= \bf X \hat \beta \\
+\hat{\mathbf{y}} &= \underbrace{\mathbf{X}(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T}_{\mathbf{H}}\mathbf{y}
+\end{align}
+$$
+
+
+\ 
+
+<span class="sp6">a.</span> Why is the hat matrix called the hat matrix?
+
+
+$$
+\begin{align*}
+\hat y            & = {\bf H} y \\
+\bf{X} \hat \beta & = {\bf H} y \\
+{\bf X} \; (X^TX)^{-1} X^T y \; & = {\bf H} y \\
+X (X^TX)^{-1} X^T        & = \bf H \\
+{\bf I} &= {\bf H}
+\end{align*}
+$$
+
+$$
+\begin{align}
+&\bf{I} = AA^{-1}  =
+\tiny \begin{bmatrix}
+{\bf 1} & 0 & \dots & 0 \\
+0 & {\bf 1} & \dots & 0 \\
+\vdots & \vdots & \ddots & \vdots \\
+0 & 0 & \dots & {\bf 1} 
+\end{bmatrix}
+\end{align}
+$$
+
 
 
 \ 
 
 
-------------------------------
 
-### 4. Test the transformed model assumptions
-
-#### Take the log of the predictor:
+------------------------------------------------------
 
 
-```{r lmFit-Log, echo=TRUE}
-modLog <- lm(log(sleep) ~ body + brain + lifespan + gestation +
-            predation + exposure + danger, 
-          data = df)
+## Bias:
+
+Next, we learn what it means to be biased. In the following, we show how to prove that $\hat \beta$ is an **unbiased estimator**.
+
+
+\ 
+
+<div class="b1">
+
+$$
+\begin{align}
+\rm{if} \quad \mathbf{E[\hat \beta - \beta]} &= 0  \\
+\\
+\rm{then} \quad \large\mathbf{\hat\beta} &\, \small\textrm{ is an unbiased estimator} 
+\end{align}
+$$
+
+</div>
+
+\ 
+
+Hence, the above proves $\hat \beta$ is an unbiased estimator for the parameter $\beta$. 
+
+Following this logic, it's also important to discuss what it means to get the minimal variance. In doing so, we reuse the $\mathrm{var}\mathbf{(\hat \beta)}$ formula to establish the following inequality that defines what it means to be ${\color{Blue}{\texttt BLUE}}$.
+
+
+### Gauss Markov Theorem:
+
+
+${\color{Blue}{\texttt BLUE}}$ is the best linear unbiased estimator. We know the Least Squares Estimation returns the **best linear unbiased estimator** $\mathbf{\hat \beta}$, but how can we **prove** this? 
+
+
+\ 
+<div class="b1">
+
+$$\large \textrm{var}(\color{Blue}{\hat\beta}) = \color{Teal}{\hat\sigma^2} (\mathbf{X}^T\mathbf{X})^{-1}\leq \textrm{var}(\color{HotPink}{\tilde\beta})$$
+</div>
+
+
+\ 
+
+
+We want to prove what it means to be the **best** linear unbiased estimator. Hence, we want to show that $\hat \beta$ is better than some other parameter $\tilde \beta$ using the following inequality:
+
+$$\mathrm{var}(\hat\beta)=\hat \sigma^2(X^TX)^{-1} \le{\mathrm{var}(\bar \beta)}$$
+
+
+To solve this inequality, we need to use our information that we learned about **bias** to show that $\tilde\beta$ is unbiased:
+
+$$\bf E[\bar\beta - \beta]=0$$
+
+Next, in order to compare our $\hat\beta$ obtained from the **least squares estimation** to an unbiased linear estimator $\tilde\beta$, we must show the variance of $\tilde\beta$ using our Variance/Covariance rules. As a result, we can show that our $\hat \beta$ variance is smaller or equal to the variance of $\bar \beta$ for all cases.
+
+
+
+-------------------------------------------------
+
+
+## Residual Sum of Squares
+
+Next, we learned about the **Residual Sum of Squares(RSS)**, which is the sum of the residuals squared.
+
+
+\ 
+<div class="b1">
+
+$$\large \mathbf{RSS}=\sum{e^2}$$
+
+</div>
+
+\ 
+
+We use the Matrix Rules to be able to get various pieces of the RSS. For example, we showed the excepted value of the RSS:
+
+$$E[e^Te]=\sigma^2(n-(p+1))$$
+
+We got this using the Trace and idempotent rules. 
+
+$$E[e^Te]=E\mathbf{[y^T(I-H)y]}$$
+
+When taking the expected value of the RSS, we used an expected value rule we already know about $\mathbf{[y^T(I-H)y]}$. We also used that idempotent rule to reduce the $I-H$ term. The purpose of finding the residual sum of squares and its expected value is to get a good estimate for $\hat \sigma^2$:
+
+
+$$\hat \sigma^2 = \frac{RSS}{(n-(p+1))}$$
+
+To derive this, we needed the fact that $\mathbf{I-H}$ is idempotent and the rule where we can take the expected value of a particular form of matrices that involves the **trace**. We then talk about what the trace is and how we can estimate it for the hat matrix as well for the identity matrix, which is how we got the $\mathbf{(n-(p+1))}$ piece. The $\hat \sigma^2$ value is an important piece for calculating the variance and covariance and variance/covariance matrix for the variance of $\hat \beta$:
+
+
+\ 
+<div class="b1">
+
+$$\mathrm{var}(\hat \beta)=\hat \sigma^2(X^TX)^{-1}$$
+
+</div>
+
+\ 
+
+### RSS Review
+
+
+<div class="b1">
+
+$${\mathbf{e}^T\mathbf{e}=\mathbf{y}^T(\mathbf{I-H})\mathbf{y}}$$
+
+We estimate $\sigma^2$ as follows as the following:
+
+$$\hat\sigma^2 = \frac{\mathbf{e}^T\mathbf{e}}{n-(p+1)}$$
+
+
+Next, we solve for $E[e^Te]$:
+
+$$
+\begin{align}
+E[\mathbf{e}^T\mathbf{e}] &= \sigma^2(n-(p+1))\\
+\hat\sigma^2&=\frac{\mathbf{e}^T\mathbf{e}}{n-(p+1)}\\
+&=\frac{\mathbf{RSS}}{n-(p+1)}
+\end{align}
+$$
+
+
+</div>
+
+
+\ 
+
+#### Standard error
+
+**What is the Standard error?** How much we expect the sample slope to vary from one random sample to another. The following estimates the **standard error** of a $\beta$ coefficient:
+
+$$se(\hat\beta_{i-1})=\sqrt{(\mathbf{X}^T\mathbf{X})^{-1}_{ii}}\hat\sigma$$
+
+
+#### More on the Hat Matrix
+
+$$
+\begin{align}\mathbf{e}^T\mathbf{e}=&(\mathbf{y}-\hat{\mathbf{y}})^T(\mathbf{y}-\hat{\mathbf{y}})\\
+=&(\mathbf{y} - \mathbf{H}\mathbf{y})^T(\mathbf{y}-\mathbf{H}\mathbf{y})\\
+=&((\mathbf{I}-\mathbf{H})\mathbf{y})^T(\mathbf{I}-\mathbf{H})\mathbf{y}\\
+=&\mathbf{y}^T(\mathbf{I-H})^T(\mathbf{I}-\mathbf{H})\mathbf{y}\\
+=&\mathbf{y}^T(\mathbf{I-H})\mathbf{y}
+\end{align}
+$$
+
+
+$$\underbrace{\small E[\mathbf{X}^T\mathbf{CX}]=E[\mathbf{X}]^T\mathbf{C}E[\mathbf{X}] +\textrm{tr}(\mathbf{C}\textrm{var}(\mathbf{X}))}_{\color{teal}{\star \;\textbf{matrix fact}}}$$
+
+
+$$
+\begin{align}
+E[\mathbf{e}^T\mathbf{e}]=&E[\mathbf{y}^T(\mathbf{I-H})\mathbf{y}]\\
+=&E[\mathbf{y}]^T(\mathbf{I-H})E[\mathbf{y}]+\textrm{tr}((\mathbf{I-H})\textrm{var}(\mathbf{y}))\\
+=&\beta^T\mathbf{X}^T(\mathbf{I-H})\mathbf{X}\beta+\sigma^2\textrm{tr}(\mathbf{I-H})\\
+=&\beta^T\mathbf{X}^T(\mathbf{X}\beta-\mathbf{H}\mathbf{X}\beta)+\sigma^2\textrm{tr}(\mathbf{I-H})\\
+=&\beta^T\mathbf{X}^T(\mathbf{X}\beta-\mathbf{X}(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{X}\beta)+\sigma^2\textrm{tr}(\mathbf{I-H})\\
+=&\beta^T\mathbf{X}^T(\mathbf{X}\beta-\mathbf{X}\underbrace{(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{X}}_{\color{teal}{\large\mathbf{I}}}\beta)+\sigma^2\textrm{tr}(\mathbf{I-H})\\
+=&\beta^T\mathbf{X}^T(\mathbf{X}\beta-\mathbf{X}\beta)+\sigma^2\textrm{tr}(\mathbf{I-H})\\
+=&\beta^T\mathbf{X}^T(0)+\sigma^2\textrm{tr}(\mathbf{I-H})\\
+=&\sigma^2\textrm{tr}(\mathbf{I-H})\\
+=&\sigma^2(\textrm{tr}(\mathbf{I}_{n\times n})-\textrm{tr}(\mathbf{H}))\\
+=&\sigma^2(n-\textrm{tr}(\mathbf{H}))\\
+=&\sigma^2(n-(p+1))
+\end{align}
+$$
+
+
+-------------------------------------------------
+
+
+## Hypothesis Testing
+
+When comparing different models, it's often that we want to compare a small model to a larger one. We can now compare the RSS of the two models! In linear regression, the goal is to minimize the $\mathbf{RSS}$ and establish a model of fewest explanatory variables $\mathbf{X_i}$. So if $RSS_{small}-RSS_{larger}$ is small, then the fit of the small model is almost as good as the larger one.
+
+
+<span class="sp6">a.</span> Is the model better than an intercept only model?
+
+\ 
+
+<div class="b1">
+
+$$
+\begin{align}
+\mathbf{H_0}&: \beta_1 = \beta_2 = {\ldots} = \beta_p = 0 \\
+\mathbf{H_A}&: \small\text{the models are not equal}
+\end{align}
+$$
+
+</div>
+
+\ 
+
+
+
+Let's create an F-Statistic so we can compare to the F-distribtion!
+
+
+### F-Statistic
+
+
+$$F = \frac{RSS_{small} - RSS_{larger} / (df_{small}- df_{larger})}{RSS_{larger}/df_{larger}}\sim F_{df_{small}- df_{larger}, df_{larger}}$$
+
+
+
+When comparing two linear regression models, we use the **F-test** as a way to compare a small model to a large model. A big part of the F test is the residuals sum of squares. So it's important to know how to get the RSS and its expected value. Based on the hypothesis testing, we can determine whether or not to fail to reject the null hypothesis (two models are the same) or reject our null hypothesis (two models are different).
+
+
+#### Summary:
+
+
+**F tests** are important because they let us do **hypothesis testing**. The F-test gives us a way to systematically compare a small model to a large model. The hypothesis test gives us a way to see if the two models are equal, i.e. if the small model is just as good as the large model. The F test is a built framework that uses the f-distribution, which can be used to find a good cut off for our hypothesis test to determine whether we can reject our null hypothesis that the models are the same.
+
+
+\ 
+
+**Exercise.** If we're only given the value of estimate $\mathbf{\hat \sigma ^2}$, how can we get the $\mathbf{RSS}$?
+
+<div class= "a2">
+
+This example illustrates why we need an estimate of $\hat \sigma^2$ because, if we didn't know $\mathit{RSS}$, we do know that our estimate $\hat \sigma^2 =\frac{\mathbf{RSS}}{(n-(p+1))}$, which we can then get $\mathit{RSS}$ by estimating $E[e^Te]=\mathbf{\sigma^2}(n-(p+1))$.
+
+</div>
+
+
+
+-----------------------------------------------
+
+
+
+## Example. F-tests in R
+
+**Goal.** predict Salary from AtBat and Hits. Is this model better than an intercept only model?
+
+```{r, echo=TRUE}
+library(ISLR)
+hitters_cc <- Hitters[complete.cases(Hitters), ]
 ```
 
 
-#### Test the model assumptions:
+\ 
 
-```{r Resid-Fit-Log, fig.cap = "Residuals vs. Fits plot to examine non-linearity and constant variance assumptions and Q-Q plot to check normality of the residuals", fig.show='hold', out.width=330}
-checkLog <- data.frame(
-  e = resid(modLog),
-  fit = fitted(modLog)
+**F-Statistic.**
+
+$$\large{F = \frac{RSS_{small} - RSS_{larger} / (df_{small}- df_{larger})}{RSS_{larger}/df_{larger}}}$$
+
+
+```{r, echo=TRUE}
+small <- lm(Salary ~ 1, data = hitters_cc)
+larger <- lm(Salary ~ AtBat + Hits, data = hitters_cc)
+```
+
+
+**Get the RSS from this model.**
+
+```{r, echo=TRUE}
+rss_small <- summary(small)$sigma^2 * (nrow(hitters_cc) - 1)
+rss_larger <- summary(larger)$sigma^2 * (nrow(hitters_cc) - 3)
+```
+
+
+<span class="sp7">a.</span> **Method 1.** Calculate it with given data
+
+```{r, echo=TRUE, eval=FALSE}
+f <- ((rss_small - rss_larger) / 2) / 
+  (rss_larger / (nrow(hitters_cc) - 3))
+f
+1 - pf(f, 2, nrow(hitters_cc) - 3)
+```
+
+
+\ 
+
+<span class="sp7">b.</span> **Method 2.** Call the anova table
+
+```{r, echo=TRUE, eval=FALSE}
+anova(small,larger)
+```
+
+\ 
+
+**Testing One Variable.** Find if the Hits variable an important contribution.
+
+$$
+H_0: \beta_2 = 0 \\
+H_A: \beta_2 \neq 0
+$$
+
+```{r, echo=TRUE, eval=FALSE}
+small <- lm(Salary ~ AtBat, data = hitters_cc)
+larger <- lm(Salary ~ AtBat + Hits, data = hitters_cc)
+anova(small, larger)
+```
+
+\ 
+
+<span class="sp7">c.</span> **Summary.**
+
+```{r echo=TRUE}
+library(ISLR)
+hitters_cc <- Hitters[complete.cases(Hitters), ]
+larger <- lm(Salary ~ AtBat + Hits, data = hitters_cc)
+summary1 <- summary(larger)
+```
+
+\ 
+
+**What is the p-value?** The probability of getting a statistic as extreme or more extreme than the observed test statistic given the null hypothesis is true.
+
+
+
+
+-------------------------------------------------
+
+
+## Confidence Intervals
+
+**Definition.** If we use the same sampling method to select different samples and computed an interval estimate for each sample, we would expect the true population parameter ($\beta_1$) to fall within the interval estimates 95% of the time.
+
+\ 
+
+<div class="b1">
+
+$$\Large\hat\beta\pm t^*SE_{\hat\beta}$$
+</div>
+
+\ 
+
+ **Confidence intervals** are a way to quantify our **uncertainty**. The confidence interval takes the $\hat \beta$ from our least squares estimation $\pm$ $t^*$, which comes from our t-distribution, multiplied by the standard error of $\hat \beta$ $\mathbf{SE_{\hat \beta}}$.
+
+
+$$\hat\beta\pm t^*SE_{\hat\beta}$$
+
+
+Suppose we select a different sample of size $\mathcal{n}$ from the same population and compute $\mathcal{n}$ new interval estimates. Each one of those $\mathcal{n}$ interval estimates would be different. We would expect that **95%** of those $\mathcal{n}$ would contain the true population parameter for that $\beta$ coefficient.
+
+------------------------------------------
+
+
+
+### More on Confidence Intervals
+
+
+
+**Run a simulation to generate 100 confidence intervals by sampling from a “true” population**
+
+
+```{r echo=FALSE}
+library(purrr)
+library(ggplot2)
+```
+
+In the following example, we are interested in illustrating the relationship between **Age** and **Wage** such that $\text{age} \approx \text{ Normal} (30,10)$, $\epsilon \approx \text{ Normal}(0,10)$, and $\text{sample } {n}=100$. 
+
+\ 
+
+<div class="b1">
+
+$$
+\large
+\underbrace{\text{wage} = {\color{teal}{\bf \beta_1}} \times \text{age} + \epsilon}_{\begin{matrix}{\bf \beta_1} \; \Rightarrow \; \text{true parameter for} \\ \text{ the relationship between} \\ \text{variables age and wage}.\end{matrix}}
+$$
+
+
+
+
+
+</div>
+
+\ 
+
+#### Generate Two Different Samples
+
+In the following, we generate a sample of 100 people (n). The `set.seed()` function makes it so that the method produces the same answer, and the `rnorm` function pulls a random normal variable.
+
+**Sample 1:**
+
+```{r sample1}
+set.seed(7)
+n <- 100 ## sample 100 people
+sample <- data.frame(
+  Age = rnorm(n,  mean = 30,  sd = 10)
 )
+sample$Wage <- 2 * sample$Age + rnorm(n, mean = 0, sd = 10)
+head(sample)
+```
 
-ggplot(checkLog, aes(x = fit, y = e)) +
-         geom_point() +
-         geom_hline(yintercept = 0, 
-                    col = "plum") +
-  labs(y = "Residuals", x = "Fitted Values") +
-  theme_minimal()
+**Sample 2:**
 
-ggplot(checkLog, aes(sample = e)) +
-  geom_qq() + 
-  geom_qq_line(color="darkseagreen") +
-  theme_minimal()
+```{r sample2}
+n <- 100
+sample2 <- data.frame(
+  Age = rnorm(n, mean = 30, sd = 10)
+)
+sample2$Wage <- 2 * sample2$Age + rnorm(n, 0, 10) 
+head(sample2)
 ```
 
 
+#### Compare intervals to the “true parameter”
+
+In the following, we use the `lm` function to fit two linear models using the two different samples we generated above. Next, we use the `confint` function to compute the confidence intervals of one or more parameters for each of the fitted models.
 
 
-Looking at the different plots, we can see that there are no significant improvements between the two models. Therefore, we will stick to the original squares regression model. Because we have a relatively small sample of 61 observations, we might violate some of the assumptions. 
+**Fit linear models:**
 
-
-
------------------------------
-
-### 5. Interpret the Model's Coefficients
-
-```{r Final-Model}
-mod <- lm(sleep ~ body + brain + lifespan + gestation +
-            predation + exposure + danger, 
-          data = df)
-
-mod_table <- tidy(mod, conf.int = TRUE)
+```{r model1, echo=TRUE}
+Model <- lm(Wage ~ Age, data = sample) ## Sample 1
+Model2 <- lm(Wage ~ Age, data = sample2) ## Sample 2
 ```
 
+**Compute the confidence intervals:**
 
-#### Forest Plot
+\ 
 
-```{r Forest-Plot, fig.cap = "Forest Plot"}
-ggplot(mod_table[-1, ], aes(x = term, y = estimate,
-                      ymin = conf.low, ymax = conf.high)) +
-  geom_pointrange() + 
-  geom_hline(yintercept = 0, lty = 2, color = "aquamarine4") +
-  coord_flip()
+```{r confint1}
+confint(Model)
 ```
 
+\ 
 
-It looks like there are two important variables: predation index and danger index. If we're already including danger and predation, we don't necessarily need to include the sleep exposure index. 
+<div class="a2">
 
+$$\texttt{95% CI}: (1.81, 2.21)$$ 
+Our true parameter is $\mathbf{2}$, which is a fixed number that falls within this above confidence interval estimate. Hence, sample 1 accurately captures an interval that contains the true parameter $\mathbf{2}$.
 
-#### Final Model:
+</div>
 
-We choose not to include the sleep exposure index because the danger index is a combination of the predation and exposure index. Therefore, the danger index consists of the information we might gain from exposure.
+\ 
 
-
-```{r Updated-Final-Model, echo=TRUE}
-mod <- lm(sleep ~ body + brain + lifespan + gestation +
-            predation + danger, 
-          data = df)
-
-mod_table <- tidy(mod, conf.int = TRUE)
+```{r confint2}
+confint(Model2)
 ```
 
+\ 
 
+<div class="a2">
 
-```{r TidyTable, fig.cap = "Tidy Table for Final Model"}
-kable(mod_table, digits = 2, 
-      col.names = c("Term", "Estimate", "SE", "Statistic", "p-value", "Lower Bound", "Upper Bound")) %>%
-  kable_styling(full_width = FALSE, 
-                font_size = 13,
-                bootstrap_options = "striped") %>%
-  collapse_rows(1, latex_hline = 'major') %>%
-  column_spec(1, color = "orchid") %>%
-  row_spec(0, font_size=14, color = "darkslategray") %>%
-  add_header_above(c(" " = 5, "95% Confidence Interval" = 2), 
-                   color = c("black", "slategray"))
+$$\texttt{95% CI}: (1.89, 2.27)$$ 
+Our true parameter is $\mathbf{2}$, which is a fixed number that falls within this above confidence interval estimate. Hence, sample 2 accurately captures an interval that contains the true parameter $\mathbf{2}$.
+
+</div>
+
+\ 
+
+#### Generate 100 Confidence Intervals:
+
+In the following, we create the `get_ci` function to generate a random sample, fit a model predicting the relationship between `Wage` and `Age`, and return the confidence interval for the model. We then use the `purrr` package to run this simulation to generate 100 confidence intervals by sampling from a “true” population. 
+
+\ 
+
+```{r getci}
+get_ci <- function(id) {
+  sample <- data.frame(
+    Age = rnorm(n, mean = 30, sd = 10)
+  )
+  sample$Wage <- 2* sample$Age + rnorm(n, 0, 10)
+  model <- lm(Wage ~ Age, data = sample)
+  return(
+    data.frame(
+      lb = confint(model)[2,1],
+      ub = confint(model)[2,2],
+      id = id
+    ))}
+## map function call 100 times
+set.seed(7)
+ci <- map_df(1:100, get_ci)
 ```
 
+\ 
 
-The variables body, brain, and lifespan have little impact on sleep duration when adjusting for body, brain, lifespan, gestation, predation, and danger, all with coefficients very close to $0$. 
-
-- A one day increase in lifespan yields an expected change in total sleep hours per day of $-0.03$ (95% CI: -0.10, 0.04) holding all other variables at constant.
-- A one day increase in gestation time yields an expected change in total sleep hours per day of $-0.01$ (95% CI: -0.03, 0) holding all other variables at constant.
-- A one unit change in predation index yields an expected change in total sleep of $2.18$ (95% CI: 0.25, 4.1) hours per day holding all other variables constant.
-- A one unit change in danger index yields an expected change in total sleep of $-3.83$ (95% CI: -5.91,	-1.76) hours per day holding all other variables constant. 
+#### Plot the 100 Confidence Intervals:
 
 
+In the following code, we use the `ggplot` function to plot 100 simulated intervals from above.
 
-$$\hat Y = 16.49 - 0.001 X_1 + 0.002 X_2 - 0.03 X_3 - 0.01 X_4 + 2.18 X_5 - 3.83 X_6 + \varepsilon_{|x,i}$$
+```{r plot, out.width=450, fig.align='center'}
+ggplot(ci, aes(y = id, color = (lb > 2 | ub < 2))) + 
+  geom_linerange(aes(xmin = lb, xmax = ub)) +
+  geom_vline(xintercept = 2, lty=2) +
+  scale_color_manual(values = c("black", "#ff66ad")) +
+  theme(legend.position = "none")
+```
 
+\ 
+
+**What percent of the intervals contain the true parameter $\mathbf{2}$?**
+
+$$\frac{95 \small\text{ intervals}}{100\small\text{ intervals}}=95\texttt{%}$$
+
+In the above exercise, we're selecting 100 different samples and computing each of their interval estimates in order to get an approximation as close to the true population parameter. The figure we created above plots 100 simulated intervals represented by horizontal lines where the <span style="color:#001d47;">**black**</span> lines represent the intervals that contain the true parameter $\mathbf{2}$ and the <span style="color:#ff66ad;">**red**</span> lines represent the intervals that do **not** contain the true parameter. From the figure, we can calculate the percent of the intervals that contain the true parameter $\mathbf{2}$ by dividing all of the black lines by the total number of lines: $\frac{95}{100}=95\texttt{%}$.
 
 
 

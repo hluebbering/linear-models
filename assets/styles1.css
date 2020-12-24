@@ -55,11 +55,11 @@ p {
 .a2 {
   color: black;
   border-radius: 25px;
-  width: 85%;
-  padding: 4px;
+  width: 82%;
+  padding: 2px;
   white-space:normal;
-  background: #88d8c0;
-  font-size: 13px;
+  background: linear-gradient(240deg, #f2ebff, #ebf4ff);
+  font-size: 8px;
   margin: auto;
   box-shadow: 4px 4px 4px #aaa;
 }
@@ -114,9 +114,8 @@ a {
   text-decoration: bold;
   font-size:19px;
   padding: 1px;
-  text-indent:0;
-  margin-left: 0;
-  margin: 2px;
+  margin-left: 16px;
+  
 }
 .sp4 {
   font-family: 'Trocchi', sans-serif;
@@ -124,9 +123,8 @@ a {
   text-decoration: bold;
   font-size:19px;
   padding: 1px;
-  text-indent:0;
-  margin-left: 0;
-  margin: 2px;
+  margin-left: 16px;
+  
 }
 .sp5 {
   font-family: 'Trocchi', sans-serif;
@@ -134,9 +132,8 @@ a {
   text-decoration: bold;
   font-size:19px;
   padding: 1px;
-  text-indent:0;
-  margin-left: 0;
-  margin: 2px;
+  margin-left: 16px;
+  
 }
 .sp6 {
   font-family: 'Trocchi', sans-serif;
@@ -144,9 +141,8 @@ a {
   text-decoration: bold;
   font-size:19px;
   padding: 1px;
-  text-indent:0;
-  margin-left: 0;
-  margin: 2px;
+  margin-left: 16px;
+  
 }
 .sp7 {
   font-family: 'Trocchi', sans-serif;
@@ -154,9 +150,8 @@ a {
   text-decoration: bold;
   font-size:19px;
   padding: 1px;
-  text-indent:0;
-  margin-left: 0;
-  margin: 2px;
+  margin-left: 16px;
+  
 }
 .sp8 {
   font-family: 'Trocchi', sans-serif;
@@ -164,9 +159,8 @@ a {
   text-decoration: bold;
   font-size:19px;
   padding: 1px;
-  text-indent:0;
-  margin-left: 0;
-  margin: 2px;
+  margin-left: 16px;
+  
 }
 
 .sp9 {
@@ -175,9 +169,8 @@ a {
   text-decoration: bold;
   font-size:19px;
   padding: 1px;
-  text-indent:0;
-  margin-left: 0;
-  margin: 2px;
+  margin-left: 16px;
+  
 }
 figure{
   font-family: 'Vollkorn', serif;
