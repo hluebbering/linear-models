@@ -82,7 +82,7 @@ h6 {
 </style>
 
 
-<link rel="stylesheet" href="assets/styles2.css" type="text/css" />
+<link rel="stylesheet" href="assets/styles1.css" type="text/css" />
 
 
 
@@ -363,7 +363,7 @@ div.tocify {
   <a href="index.html">Model Diagnostics</a>
 </li>
 <li>
-  <a href="01-index.html">Putting it all together</a>
+  <a href="01-index.html">Summary</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -444,7 +444,7 @@ div.tocify {
 <p><span class="math display">\[E[e^Te]=E\mathbf{[y^T(I-H)y]}\]</span></p>
 <p>When taking the expected value of the RSS, we used an expected value rule we already know about <span class="math inline">\(\mathbf{[y^T(I-H)y]}\)</span>. We also used that idempotent rule to reduce the <span class="math inline">\(I-H\)</span> term. The purpose of finding the residual sum of squares and its expected value is to get a good estimate for <span class="math inline">\(\hat \sigma^2\)</span>:</p>
 <p><span class="math display">\[\hat \sigma^2 = \frac{RSS}{(n-(p+1))}\]</span></p>
-<p>To derive this, we needed the fact that <span class="math inline">\(\mathbf{I-H}\)</span> is idempotent and we needed that rule where we can take when we need to know that taking the expected value of matrices of a particular form such as always thats that particular form that involves the <strong>trace</strong>. We then talk about what the trace is and how we can estimate it for the hat matrix as well for the identity matrix, which is how we got the <span class="math inline">\(\mathbf{(n-(p+1))}\)</span> piece. The <span class="math inline">\(\hat \sigma^2\)</span> value is an important piece for calculating the variance and covariance and variance/covariance matrix for the variance of <span class="math inline">\(\hat \beta\)</span>:</p>
+<p>To derive this, we needed the fact that <span class="math inline">\(\mathbf{I-H}\)</span> is idempotent and the rule where we can take the expected value of a particular form of matrices that involves the <strong>trace</strong>. We then talk about what the trace is and how we can estimate it for the hat matrix as well for the identity matrix, which is how we got the <span class="math inline">\(\mathbf{(n-(p+1))}\)</span> piece. The <span class="math inline">\(\hat \sigma^2\)</span> value is an important piece for calculating the variance and covariance and variance/covariance matrix for the variance of <span class="math inline">\(\hat \beta\)</span>:</p>
 <p><span class="math display">\[\mathrm{var}(\hat \beta)=\hat \sigma^2(X^TX)^{-1}\]</span></p>
 <hr />
 </div>
@@ -512,13 +512,6 @@ div.tocify {
 <h3>Generate Two Different Samples</h3>
 <p>In the following, we generate a sample of 100 people (n). The <code>set.seed()</code> function makes it so that the method produces the same answer, and the <code>rnorm</code> function pulls a random normal variable.</p>
 <p><strong>Sample 1:</strong></p>
-<pre class="r"><code>set.seed(7)
-n &lt;- 100 ## sample 100 people
-sample &lt;- data.frame(
-  Age = rnorm(n,  mean = 30,  sd = 10)
-)
-sample$Wage &lt;- 2 * sample$Age + rnorm(n, mean = 0, sd = 10)
-head(sample)</code></pre>
 <pre><code>##        Age      Wage
 ## 1 52.87247 110.93553
 ## 2 18.03228  41.93996
@@ -527,12 +520,6 @@ head(sample)</code></pre>
 ## 5 20.29327  43.67375
 ## 6 20.52720  25.01562</code></pre>
 <p><strong>Sample 2:</strong></p>
-<pre class="r"><code>n &lt;- 100
-sample2 &lt;- data.frame(
-  Age = rnorm(n, mean = 30, sd = 10)
-)
-sample2$Wage &lt;- 2 * sample2$Age + rnorm(n, 0, 10) 
-head(sample2)</code></pre>
 <pre><code>##        Age      Wage
 ## 1 50.23344 105.71950
 ## 2 38.62492  74.49258
@@ -545,11 +532,8 @@ head(sample2)</code></pre>
 <h3>Compare intervals to the “true parameter”</h3>
 <p>In the following, we use the <code>lm</code> function to fit two linear models using the two different samples we generated above. Next, we use the <code>confint</code> function to compute the confidence intervals of one or more parameters for each of the fitted models.</p>
 <p><strong>Fit linear models:</strong></p>
-<pre class="r"><code>Model &lt;- lm(Wage ~ Age, data = sample) ## Sample 1
-Model2 &lt;- lm(Wage ~ Age, data = sample2) ## Sample 2</code></pre>
 <p><strong>Compute the confidence intervals:</strong></p>
 <p> </p>
-<pre class="r"><code>confint(Model)</code></pre>
 <pre><code>##                 2.5 %   97.5 %
 ## (Intercept) -5.513397 7.503540
 ## Age          1.811456 2.208256</code></pre>
@@ -558,7 +542,6 @@ Model2 &lt;- lm(Wage ~ Age, data = sample2) ## Sample 2</code></pre>
 <p><span class="math display">\[\texttt{95% CI}: (1.81, 2.21)\]</span> Our true parameter is <span class="math inline">\(\mathbf{2}\)</span>, which is a fixed number that falls within this above confidence interval estimate. Hence, sample 1 accurately captures an interval that contains the true parameter <span class="math inline">\(\mathbf{2}\)</span>.</p>
 </div>
 <p> </p>
-<pre class="r"><code>confint(Model2)</code></pre>
 <pre><code>##                 2.5 %   97.5 %
 ## (Intercept) -8.880926 3.241064
 ## Age          1.885782 2.270270</code></pre>
@@ -572,133 +555,11 @@ Model2 &lt;- lm(Wage ~ Age, data = sample2) ## Sample 2</code></pre>
 <h3>Generate 100 Confidence Intervals:</h3>
 <p>In the following, we create the <code>get_ci</code> function to generate a random sample, fit a model predicting the relationship between <code>Wage</code> and <code>Age</code>, and return the confidence interval for the model. We then use the <code>purrr</code> package to run this simulation to generate 100 confidence intervals by sampling from a “true” population.</p>
 <p> </p>
-<pre class="r"><code>get_ci &lt;- function(id) {
-  sample &lt;- data.frame(
-    Age = rnorm(n, mean = 30, sd = 10)
-  )
-  sample$Wage &lt;- 2* sample$Age + rnorm(n, 0, 10)
-  model &lt;- lm(Wage ~ Age, data = sample)
-  return(
-    data.frame(
-      lb = confint(model)[2,1],
-      ub = confint(model)[2,2],
-      id = id
-    ))}
-## map function call 100 times
-set.seed(7)
-ci &lt;- map_df(1:100, get_ci)
-ci</code></pre>
-<pre><code>##           lb       ub  id
-## 1   1.811456 2.208256   1
-## 2   1.885782 2.270270   2
-## 3   1.747393 2.175578   3
-## 4   1.789730 2.241068   4
-## 5   1.706706 2.100767   5
-## 6   1.965539 2.369903   6
-## 7   1.817412 2.235196   7
-## 8   1.771773 2.168298   8
-## 9   1.813153 2.226753   9
-## 10  1.720200 2.151774  10
-## 11  1.827199 2.205988  11
-## 12  1.889959 2.243009  12
-## 13  1.774781 2.178826  13
-## 14  1.761686 2.145957  14
-## 15  1.769087 2.204843  15
-## 16  2.032832 2.407325  16
-## 17  1.888968 2.289237  17
-## 18  1.886819 2.308981  18
-## 19  1.836450 2.191071  19
-## 20  1.788087 2.208988  20
-## 21  1.791706 2.133542  21
-## 22  1.775516 2.169829  22
-## 23  1.823105 2.239549  23
-## 24  1.765727 2.182540  24
-## 25  1.766709 2.131931  25
-## 26  1.798480 2.227568  26
-## 27  1.907268 2.320464  27
-## 28  1.861781 2.221742  28
-## 29  1.964606 2.324063  29
-## 30  1.688661 2.058808  30
-## 31  1.898434 2.277649  31
-## 32  1.608771 2.003401  32
-## 33  1.629066 2.085719  33
-## 34  1.717546 2.120257  34
-## 35  1.840852 2.227178  35
-## 36  1.596425 1.992751  36
-## 37  1.754447 2.222357  37
-## 38  1.818929 2.204050  38
-## 39  1.995319 2.315291  39
-## 40  1.984829 2.317043  40
-## 41  1.975906 2.318633  41
-## 42  1.976608 2.409119  42
-## 43  1.819331 2.184243  43
-## 44  1.767180 2.160836  44
-## 45  1.700951 2.094633  45
-## 46  1.870416 2.267377  46
-## 47  1.962067 2.350831  47
-## 48  1.703288 2.065038  48
-## 49  1.685743 2.095736  49
-## 50  1.890660 2.269517  50
-## 51  1.916953 2.335098  51
-## 52  1.715522 2.133406  52
-## 53  1.832427 2.270592  53
-## 54  1.707494 2.129758  54
-## 55  1.735660 2.124085  55
-## 56  1.716514 2.123040  56
-## 57  1.896716 2.293324  57
-## 58  1.886719 2.352785  58
-## 59  1.691695 2.092893  59
-## 60  2.069776 2.542423  60
-## 61  1.835610 2.304990  61
-## 62  1.597149 1.956100  62
-## 63  1.806818 2.207908  63
-## 64  1.965324 2.362996  64
-## 65  1.690336 2.109878  65
-## 66  1.742592 2.148844  66
-## 67  1.964708 2.340041  67
-## 68  1.715803 2.184893  68
-## 69  1.898585 2.334491  69
-## 70  1.690144 2.018530  70
-## 71  1.870736 2.295082  71
-## 72  1.820545 2.241361  72
-## 73  1.810885 2.140753  73
-## 74  1.696239 2.046693  74
-## 75  1.848146 2.209632  75
-## 76  1.744134 2.125966  76
-## 77  1.836901 2.268414  77
-## 78  1.903663 2.304057  78
-## 79  1.672467 2.071097  79
-## 80  1.866229 2.303107  80
-## 81  1.766351 2.179824  81
-## 82  1.799946 2.149847  82
-## 83  1.603352 2.025507  83
-## 84  1.837171 2.189856  84
-## 85  1.767415 2.174879  85
-## 86  1.898412 2.318471  86
-## 87  1.672686 2.023891  87
-## 88  1.872905 2.271626  88
-## 89  2.015941 2.465607  89
-## 90  1.913949 2.335074  90
-## 91  1.930481 2.304991  91
-## 92  1.804119 2.228152  92
-## 93  1.768044 2.179842  93
-## 94  1.875094 2.403415  94
-## 95  1.688662 2.221422  95
-## 96  1.869576 2.215035  96
-## 97  1.763146 2.253624  97
-## 98  1.864914 2.292133  98
-## 99  1.946845 2.329600  99
-## 100 1.712754 2.071801 100</code></pre>
 <p> </p>
 </div>
 <div id="plot-the-100-confidence-intervals" class="section level3">
 <h3>Plot the 100 Confidence Intervals:</h3>
 <p>In the following code, we use the <code>ggplot</code> function to plot 100 simulated intervals from above.</p>
-<pre class="r"><code>ggplot(ci, aes(y = id, color = (lb &gt; 2 | ub &lt; 2))) + 
-  geom_linerange(aes(xmin = lb, xmax = ub)) +
-  geom_vline(xintercept = 2, lty=2) +
-  scale_color_manual(values = c(&quot;black&quot;, &quot;#ff66ad&quot;)) +
-  theme(legend.position = &quot;none&quot;)</code></pre>
 <p><img src="01-index_files/figure-html/plot-1.png" width="450" style="display: block; margin: auto;" /></p>
 <p><strong>What percent of the intervals contain the true parameter <span class="math inline">\(\mathbf{2}\)</span>?</strong></p>
 <p><span class="math display">\[\frac{95 \small\text{ intervals}}{100\small\text{ intervals}}=95\texttt{%}\]</span></p>
@@ -709,8 +570,7 @@ ci</code></pre>
 <div id="code-appendix" class="section level2">
 <h2>Code Appendix</h2>
 <pre class="r"><code>library(knitr)
-knitr::opts_chunk$set(echo = TRUE, eval = TRUE)
-  
+knitr::opts_chunk$set(echo = FALSE, eval = TRUE, message = FALSE)
 library(purrr)
 library(ggplot2)
 set.seed(7)
@@ -745,7 +605,6 @@ get_ci &lt;- function(id) {
 ## map function call 100 times
 set.seed(7)
 ci &lt;- map_df(1:100, get_ci)
-ci
 ggplot(ci, aes(y = id, color = (lb &gt; 2 | ub &lt; 2))) + 
   geom_linerange(aes(xmin = lb, xmax = ub)) +
   geom_vline(xintercept = 2, lty=2) +
