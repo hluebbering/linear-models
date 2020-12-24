@@ -4,5 +4,5 @@ navbar:
   left:
     - text: "Model Diagnostics"
       href: index.html
-    - text: "Putting it all together"
+    - text: "Summary"
       href: 01-index.html

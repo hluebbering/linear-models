@@ -2,7 +2,7 @@
 title: "Multiple Linear Regressions"
 output:
   html_document:
-    css: ./assets/styles2.css
+    css: ./assets/styles1.css
     toc: true
     toc_float: true
 bibliography: ./assets/citation/sta312.bib
@@ -14,8 +14,7 @@ nocite: '@*'
 
 ```{r include=FALSE}
 library(knitr)
-knitr::opts_chunk$set(echo = TRUE, eval = TRUE)
-  
+knitr::opts_chunk$set(echo = FALSE, eval = TRUE, message = FALSE)
 ```
 
 
@@ -137,9 +136,7 @@ When taking the expected value of the RSS, we used an expected value rule we alr
 $$\hat \sigma^2 = \frac{RSS}{(n-(p+1))}$$
 
 To derive this, we needed the fact that $\mathbf{I-H}$ is idempotent
-and we needed that rule where we can take 
-when we need to know that taking the expected value of matrices of a particular form such as
-always thats that particular form that involves the **trace**. We then talk about what the trace is and how we can estimate it for the hat matrix as well for the identity matrix, which is how we got the $\mathbf{(n-(p+1))}$ piece. The $\hat \sigma^2$ value is an important piece for calculating the variance and covariance and variance/covariance matrix for the variance of $\hat \beta$:
+and the rule where we can take the expected value of a particular form of matrices that involves the **trace**. We then talk about what the trace is and how we can estimate it for the hat matrix as well for the identity matrix, which is how we got the $\mathbf{(n-(p+1))}$ piece. The $\hat \sigma^2$ value is an important piece for calculating the variance and covariance and variance/covariance matrix for the variance of $\hat \beta$:
 
 
 $$\mathrm{var}(\hat \beta)=\hat \sigma^2(X^TX)^{-1}$$
@@ -356,7 +353,6 @@ get_ci <- function(id) {
 ## map function call 100 times
 set.seed(7)
 ci <- map_df(1:100, get_ci)
-ci
 ```
 
 \ 
