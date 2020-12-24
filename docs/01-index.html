@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Multiple Linear Regressions</title>
+
+<script src="site_libs/header-attrs-2.6/header-attrs.js"></script>
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+<link rel="stylesheet" href="assets/styles2.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Multiple Linear Regressions</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Model Diagnostics</a>
+</li>
+<li>
+  <a href="01-index.html">Putting it all together</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Multiple Linear Regressions</h1>
+
+</div>
+
+
+<div id="random-matrices" class="section level2">
+<h2>Random Matrices:</h2>
+<p>In Linear Modeling, we begin by discussing Matrix Rules and Properties and learning about <strong>Excepted Values</strong> and <strong>Covariances</strong>, and <strong>Variances</strong>, all of which are Random Matrices.</p>
+<p><strong>Expectation</strong> describes the average value</p>
+<p><span class="math display">\[E[X] = \begin{cases}
+\sum_x xp_X(x) &amp; X \textrm{ is a discrete random variable}\\
+\int_{-\infty}^{\infty}xf_X(x)dx &amp; X \textrm{ is a continuous random variable}
+\end{cases}\]</span></p>
+<p><strong>Covariance</strong> is a measure of joint variability between two random variables</p>
+<p><span class="math display">\[cov(\mathbf{X},\mathbf{Y}) = E[(\mathbf{X} - E[\mathbf{X}])(\mathbf{Y} - E[\mathbf{Y}])]\]</span></p>
+<p><strong>Variance</strong> measures the spread of a variable</p>
+<p><span class="math display">\[var(\mathbf{X}) = cov(\mathbf{X}, \mathbf{X}) = E[\mathbf{X}^2] - E[\mathbf{X}]^2\]</span></p>
+<div id="least-squares-estimation" class="section level3">
+<h3>Least Squares Estimation:</h3>
+<p><span class="math display">\[\mathbf{y} = \mathbf{X} \beta + \epsilon\]</span></p>
+<p>The purpose of the <strong>least squares estimation</strong> is to estimate the relationship between various predictor variables <span class="math inline">\(X\)</span> and an outcome variable <span class="math inline">\(Y\)</span>. In using this relationship, we must understand the <strong>Law of Total Exception</strong> and <strong>Law of Total Variance</strong> rules.</p>
+<p>As a result, we can take the <strong>expected value</strong> of <span class="math inline">\(\hat \beta\)</span>, in which we want to show:</p>
+<p><span class="math display">\[\mathbf{E[\hat{\beta}]=\beta}\]</span></p>
+<p>In order to prove the above equation, we must use the Law of Total Exception and various Matrix rules. We can also take the <strong>variance of <span class="math inline">\(\hat \beta\)</span></strong>:</p>
+<p><span class="math display">\[\rm{var}{(\mathbf{\hat \beta})} = \hat \sigma ^2 (\mathbf{X^TX})^{-1}\]</span></p>
+<p>In order to get the variance of <span class="math inline">\(\hat \beta\)</span>, we have to calculate the variance/ covariance matrix using the properties of random matrices and the Law of Total Variance.</p>
+<div id="summary" class="section level4">
+<h4>Summary:</h4>
+<p>The overall idea of the <strong>Law of Total Exception</strong> and the <strong>Law of Total Variance</strong> rules allow us to calculate the <strong>Expected Value</strong> and <strong>Variance</strong> or our main estimator <span class="math inline">\(\mathbf{\hat \beta}\)</span> from the <strong>Least Squares Estimator</strong>.</p>
+<hr />
+</div>
+</div>
+</div>
+<div id="bias" class="section level2">
+<h2>Bias:</h2>
+<p>Next, we learn what it means to be biased. In the following, we show how to prove that <span class="math inline">\(\hat \beta\)</span> is an <strong>unbiased estimator</strong>.</p>
+<p><span class="math display">\[
+\begin{align}
+\rm{if} \quad \mathbf{E[\hat \beta - \beta]} &amp;= 0  \\
+\\
+\rm{then} \quad \large\mathbf{\hat\beta} &amp;\, \small\textrm{ is an unbiased estimator} 
+\end{align}
+\]</span></p>
+<p>Hence, the above proves <span class="math inline">\(\hat \beta\)</span> is an unbiased estimator for the parameter <span class="math inline">\(\beta\)</span>.</p>
+<p>Following this logic, it’s also important to discuss what it means to get the minimal variance. In doing so, we reuse the <span class="math inline">\(\mathrm{var}\mathbf{(\hat \beta)}\)</span> formula to establish the following inequality that defines what it means to be <span class="math inline">\({\color{Blue}{\texttt BLUE}}\)</span>.</p>
+<div id="gauss-markov-theorem" class="section level3">
+<h3>Gauss Markov Theorem:</h3>
+<p><span class="math inline">\({\color{Blue}{\texttt BLUE}}\)</span> is the best linear unbiased estimator. We know the Least Squares Estimation returns the <strong>best linear unbiased estimator</strong> <span class="math inline">\(\mathbf{\hat \beta}\)</span>, but how can we <strong>prove</strong> this?</p>
+<p><span class="math display">\[\large \textrm{var}(\color{Blue}{\hat\beta}) = \color{Teal}{\hat\sigma^2} (\mathbf{X}^T\mathbf{X})^{-1}\leq \textrm{var}(\color{HotPink}{\tilde\beta})\]</span></p>
+<p>We want to prove what it means to be the <strong>best</strong> linear unbiased estimator. Hence, we want to show that <span class="math inline">\(\hat \beta\)</span> is better than some other parameter <span class="math inline">\(\tilde \beta\)</span> using the following inequality:</p>
+<p><span class="math display">\[\mathrm{var}(\hat\beta)=\hat \sigma^2(X^TX)^{-1} \le{\mathrm{var}(\bar \beta)}\]</span></p>
+<p>To solve this inequality, we need to use our information that we learned about <strong>bias</strong> to show that <span class="math inline">\(\tilde\beta\)</span> is unbiased:</p>
+<p><span class="math display">\[\bf E[\bar\beta - \beta]=0\]</span></p>
+<p>Next, in order to compare our <span class="math inline">\(\hat\beta\)</span> obtained from the <strong>least squares estimation</strong> to an unbiased linear estimator <span class="math inline">\(\tilde\beta\)</span>, we must show the variance of <span class="math inline">\(\tilde\beta\)</span> using our Variance/Covariance rules. As a result, we can show that our <span class="math inline">\(\hat \beta\)</span> variance is smaller or equal to the variance of <span class="math inline">\(\bar \beta\)</span> for all cases.</p>
+<hr />
+</div>
+</div>
+<div id="residual-sum-of-squares" class="section level2">
+<h2>Residual Sum of Squares</h2>
+<p>Next, we learned about the <strong>Residual Sum of Squares(RSS)</strong>, which is the sum of the residuals squared.</p>
+<p><span class="math display">\[\mathbf{RSS}=\sum{e^2}\]</span></p>
+<p>We use the Matrix Rules to be able to get various pieces of the RSS. For example, we showed the excepted value of the RSS:</p>
+<p><span class="math display">\[E[e^Te]=\sigma^2(n-(p+1))\]</span></p>
+<p>We got this using the Trace and idempotent rules.</p>
+<p><span class="math display">\[E[e^Te]=E\mathbf{[y^T(I-H)y]}\]</span></p>
+<p>When taking the expected value of the RSS, we used an expected value rule we already know about <span class="math inline">\(\mathbf{[y^T(I-H)y]}\)</span>. We also used that idempotent rule to reduce the <span class="math inline">\(I-H\)</span> term. The purpose of finding the residual sum of squares and its expected value is to get a good estimate for <span class="math inline">\(\hat \sigma^2\)</span>:</p>
+<p><span class="math display">\[\hat \sigma^2 = \frac{RSS}{(n-(p+1))}\]</span></p>
+<p>To derive this, we needed the fact that <span class="math inline">\(\mathbf{I-H}\)</span> is idempotent and we needed that rule where we can take when we need to know that taking the expected value of matrices of a particular form such as always thats that particular form that involves the <strong>trace</strong>. We then talk about what the trace is and how we can estimate it for the hat matrix as well for the identity matrix, which is how we got the <span class="math inline">\(\mathbf{(n-(p+1))}\)</span> piece. The <span class="math inline">\(\hat \sigma^2\)</span> value is an important piece for calculating the variance and covariance and variance/covariance matrix for the variance of <span class="math inline">\(\hat \beta\)</span>:</p>
+<p><span class="math display">\[\mathrm{var}(\hat \beta)=\hat \sigma^2(X^TX)^{-1}\]</span></p>
+<hr />
+</div>
+<div id="hypothesis-testing" class="section level2">
+<h2>Hypothesis Testing</h2>
+<p>When comparing different models, it’s often that we want to compare a small model to a larger one. We can now compare the RSS of the two models! In linear regression, the goal is to minimize the <span class="math inline">\(\mathbf{RSS}\)</span> and establish a model of fewest explanatory variables <span class="math inline">\(\mathbf{X_i}\)</span>. So if <span class="math inline">\(RSS_{small}-RSS_{larger}\)</span> is small, then the fit of the small model is almost as good as the larger one.</p>
+<ol style="list-style-type: lower-alpha">
+<li>Is the model better than an intercept only model?</li>
+</ol>
+<p><span class="math display">\[
+\begin{align}
+\mathbf{H_0}&amp;: \beta_1 = \beta_2 = {\ldots} = \beta_p = 0 \\
+\mathbf{H_A}&amp;: \small\text{the models are not equal}
+\end{align}
+\]</span></p>
+<p>Let’s create an F-Statistic so we can compare to the F-distribtion!</p>
+<div id="f-statistic" class="section level3">
+<h3>F-Statistic</h3>
+<p><span class="math display">\[F = \frac{RSS_{small} - RSS_{larger} / (df_{small}- df_{larger})}{RSS_{larger}/df_{larger}}\sim F_{df_{small}- df_{larger}, df_{larger}}\]</span></p>
+<p>When comparing two linear regression models, we use the <strong>F-test</strong> as a way to compare a small model to a large model. A big part of the F test is the residuals sum of squares. So it’s important to know how to get the RSS and its expected value. Based on the hypothesis testing, we can determine whether or not to fail to reject the null hypothesis (two models are the same) or reject our null hypothesis (two models are different).</p>
+<div id="summary-1" class="section level4">
+<h4>Summary:</h4>
+<p><strong>F tests</strong> are important because they let us do <strong>hypothesis testing</strong>. The F-test gives us a way to systematically compare a small model to a large model. The hypothesis test gives us a way to see if the two models are equal, i.e. if the small model is just as good as the large model. The F test is a built framework that uses the f-distribution, which can be used to find a good cut off for our hypothesis test to determine whether we can reject our null hypothesis that the models are the same.</p>
+</div>
+<div id="example" class="section level4">
+<h4>Example:</h4>
+<p>If we’re only given the value of estimate <span class="math inline">\(\mathbf{\hat \sigma ^2}\)</span>, how can we get the <span class="math inline">\(\mathbf{RSS}\)</span>?</p>
+<p>This example illustrates why we need an estimate of <span class="math inline">\(\hat \sigma^2\)</span> because, if we didn’t know <span class="math inline">\(\mathit{RSS}\)</span>, we do know that our estimate <span class="math inline">\(\hat \sigma^2 =\frac{\mathbf{RSS}}{(n-(p+1))}\)</span>, which we can then get <span class="math inline">\(\mathit{RSS}\)</span> by estimating <span class="math inline">\(E[e^Te]=\mathbf{\sigma^2}(n-(p+1))\)</span>.</p>
+<hr />
+</div>
+</div>
+</div>
+<div id="confidence-intervals" class="section level2">
+<h2>Confidence Intervals</h2>
+<p><strong>Definition.</strong> If we use the same sampling method to select different samples and computed an interval estimate for each sample, we would expect the true population parameter (<span class="math inline">\(\beta_1\)</span>) to fall within the interval estimates 95% of the time.</p>
+<p><span class="math display">\[\Large\hat\beta\pm t^*SE_{\hat\beta}\]</span></p>
+<p><strong>Confidence intervals</strong> are a way to quantify our <strong>uncertainty</strong>. The confidence interval takes the <span class="math inline">\(\hat \beta\)</span> from our least squares estimation <span class="math inline">\(\pm\)</span> <span class="math inline">\(t^*\)</span>, which comes from our t-distribution, multiplied by the standard error of <span class="math inline">\(\hat \beta\)</span> <span class="math inline">\(\mathbf{SE_{\hat \beta}}\)</span>.</p>
+<p><span class="math display">\[\hat\beta\pm t^*SE_{\hat\beta}\]</span></p>
+<p>Suppose we select a different sample of size <span class="math inline">\(\mathcal{n}\)</span> from the same population and compute <span class="math inline">\(\mathcal{n}\)</span> new interval estimates. Each one of those <span class="math inline">\(\mathcal{n}\)</span> interval estimates would be different. We would expect that <strong>95%</strong> of those <span class="math inline">\(\mathcal{n}\)</span> would contain the true population parameter for that <span class="math inline">\(\beta\)</span> coefficient.</p>
+<hr />
+</div>
+<div id="more-on-confidence-intervals" class="section level2">
+<h2>More on Confidence Intervals</h2>
+<p><strong>Run a simulation to generate 100 confidence intervals by sampling from a “true” population</strong></p>
+<p>In the following example, we are interested in illustrating the relationship between <strong>Age</strong> and <strong>Wage</strong>.</p>
+<div class="b2">
+<p><span class="math display">\[\text{Wage} ={\bf \beta_1}\times\text{Age} + \epsilon\\\]</span> <span class="math display">\[\small{\mathbf{\beta_1}\Rightarrow\small{\text{true parameter for the relationship between Age and Wage}}}\]</span></p>
+</div>
+<div class="b01">
+<p><span class="math display">\[
+\begin{align}
+\Rightarrow \,&amp; \text{Age} \approx \text{Normal} (30,10) \\
+\Rightarrow \,&amp; \epsilon \approx \text{Normal}(0,10) \\
+\Rightarrow \,&amp; \text{Sample } \texttt{n}=100
+\end{align}
+\]</span></p>
+</div>
+<p> </p>
+<p>From the above equation, suppose <span class="math inline">\(\beta_1=2\)</span>,</p>
+<div class="a1">
+<p><span class="math display">\[\mathrm{Wage} = \mathbf{2}\times\mathrm{Age} + \epsilon\]</span> <span class="math display">\[\small{\Rightarrow \beta_1} = \mathbf{2}\]</span></p>
+</div>
+<p> </p>
+<div id="generate-two-different-samples" class="section level3">
+<h3>Generate Two Different Samples</h3>
+<p>In the following, we generate a sample of 100 people (n). The <code>set.seed()</code> function makes it so that the method produces the same answer, and the <code>rnorm</code> function pulls a random normal variable.</p>
+<p><strong>Sample 1:</strong></p>
+<pre class="r"><code>set.seed(7)
+n &lt;- 100 ## sample 100 people
+sample &lt;- data.frame(
+  Age = rnorm(n,  mean = 30,  sd = 10)
+)
+sample$Wage &lt;- 2 * sample$Age + rnorm(n, mean = 0, sd = 10)
+head(sample)</code></pre>
+<pre><code>##        Age      Wage
+## 1 52.87247 110.93553
+## 2 18.03228  41.93996
+## 3 23.05707  45.32082
+## 4 25.87707  40.01053
+## 5 20.29327  43.67375
+## 6 20.52720  25.01562</code></pre>
+<p><strong>Sample 2:</strong></p>
+<pre class="r"><code>n &lt;- 100
+sample2 &lt;- data.frame(
+  Age = rnorm(n, mean = 30, sd = 10)
+)
+sample2$Wage &lt;- 2 * sample2$Age + rnorm(n, 0, 10) 
+head(sample2)</code></pre>
+<pre><code>##        Age      Wage
+## 1 50.23344 105.71950
+## 2 38.62492  74.49258
+## 3 29.75091  60.04891
+## 4 36.00635  68.13020
+## 5 42.16481  80.15938
+## 6 18.23468  24.82762</code></pre>
+</div>
+<div id="compare-intervals-to-the-true-parameter" class="section level3">
+<h3>Compare intervals to the “true parameter”</h3>
+<p>In the following, we use the <code>lm</code> function to fit two linear models using the two different samples we generated above. Next, we use the <code>confint</code> function to compute the confidence intervals of one or more parameters for each of the fitted models.</p>
+<p><strong>Fit linear models:</strong></p>
+<pre class="r"><code>Model &lt;- lm(Wage ~ Age, data = sample) ## Sample 1
+Model2 &lt;- lm(Wage ~ Age, data = sample2) ## Sample 2</code></pre>
+<p><strong>Compute the confidence intervals:</strong></p>
+<p> </p>
+<pre class="r"><code>confint(Model)</code></pre>
+<pre><code>##                 2.5 %   97.5 %
+## (Intercept) -5.513397 7.503540
+## Age          1.811456 2.208256</code></pre>
+<p> </p>
+<div class="a1">
+<p><span class="math display">\[\texttt{95% CI}: (1.81, 2.21)\]</span> Our true parameter is <span class="math inline">\(\mathbf{2}\)</span>, which is a fixed number that falls within this above confidence interval estimate. Hence, sample 1 accurately captures an interval that contains the true parameter <span class="math inline">\(\mathbf{2}\)</span>.</p>
+</div>
+<p> </p>
+<pre class="r"><code>confint(Model2)</code></pre>
+<pre><code>##                 2.5 %   97.5 %
+## (Intercept) -8.880926 3.241064
+## Age          1.885782 2.270270</code></pre>
+<p> </p>
+<div class="a1">
+<p><span class="math display">\[\texttt{95% CI}: (1.89, 2.27)\]</span> Our true parameter is <span class="math inline">\(\mathbf{2}\)</span>, which is a fixed number that falls within this above confidence interval estimate. Hence, sample 2 accurately captures an interval that contains the true parameter <span class="math inline">\(\mathbf{2}\)</span>.</p>
+</div>
+<p> </p>
+</div>
+<div id="generate-100-confidence-intervals" class="section level3">
+<h3>Generate 100 Confidence Intervals:</h3>
+<p>In the following, we create the <code>get_ci</code> function to generate a random sample, fit a model predicting the relationship between <code>Wage</code> and <code>Age</code>, and return the confidence interval for the model. We then use the <code>purrr</code> package to run this simulation to generate 100 confidence intervals by sampling from a “true” population.</p>
+<p> </p>
+<pre class="r"><code>get_ci &lt;- function(id) {
+  sample &lt;- data.frame(
+    Age = rnorm(n, mean = 30, sd = 10)
+  )
+  sample$Wage &lt;- 2* sample$Age + rnorm(n, 0, 10)
+  model &lt;- lm(Wage ~ Age, data = sample)
+  return(
+    data.frame(
+      lb = confint(model)[2,1],
+      ub = confint(model)[2,2],
+      id = id
+    ))}
+## map function call 100 times
+set.seed(7)
+ci &lt;- map_df(1:100, get_ci)
+ci</code></pre>
+<pre><code>##           lb       ub  id
+## 1   1.811456 2.208256   1
+## 2   1.885782 2.270270   2
+## 3   1.747393 2.175578   3
+## 4   1.789730 2.241068   4
+## 5   1.706706 2.100767   5
+## 6   1.965539 2.369903   6
+## 7   1.817412 2.235196   7
+## 8   1.771773 2.168298   8
+## 9   1.813153 2.226753   9
+## 10  1.720200 2.151774  10
+## 11  1.827199 2.205988  11
+## 12  1.889959 2.243009  12
+## 13  1.774781 2.178826  13
+## 14  1.761686 2.145957  14
+## 15  1.769087 2.204843  15
+## 16  2.032832 2.407325  16
+## 17  1.888968 2.289237  17
+## 18  1.886819 2.308981  18
+## 19  1.836450 2.191071  19
+## 20  1.788087 2.208988  20
+## 21  1.791706 2.133542  21
+## 22  1.775516 2.169829  22
+## 23  1.823105 2.239549  23
+## 24  1.765727 2.182540  24
+## 25  1.766709 2.131931  25
+## 26  1.798480 2.227568  26
+## 27  1.907268 2.320464  27
+## 28  1.861781 2.221742  28
+## 29  1.964606 2.324063  29
+## 30  1.688661 2.058808  30
+## 31  1.898434 2.277649  31
+## 32  1.608771 2.003401  32
+## 33  1.629066 2.085719  33
+## 34  1.717546 2.120257  34
+## 35  1.840852 2.227178  35
+## 36  1.596425 1.992751  36
+## 37  1.754447 2.222357  37
+## 38  1.818929 2.204050  38
+## 39  1.995319 2.315291  39
+## 40  1.984829 2.317043  40
+## 41  1.975906 2.318633  41
+## 42  1.976608 2.409119  42
+## 43  1.819331 2.184243  43
+## 44  1.767180 2.160836  44
+## 45  1.700951 2.094633  45
+## 46  1.870416 2.267377  46
+## 47  1.962067 2.350831  47
+## 48  1.703288 2.065038  48
+## 49  1.685743 2.095736  49
+## 50  1.890660 2.269517  50
+## 51  1.916953 2.335098  51
+## 52  1.715522 2.133406  52
+## 53  1.832427 2.270592  53
+## 54  1.707494 2.129758  54
+## 55  1.735660 2.124085  55
+## 56  1.716514 2.123040  56
+## 57  1.896716 2.293324  57
+## 58  1.886719 2.352785  58
+## 59  1.691695 2.092893  59
+## 60  2.069776 2.542423  60
+## 61  1.835610 2.304990  61
+## 62  1.597149 1.956100  62
+## 63  1.806818 2.207908  63
+## 64  1.965324 2.362996  64
+## 65  1.690336 2.109878  65
+## 66  1.742592 2.148844  66
+## 67  1.964708 2.340041  67
+## 68  1.715803 2.184893  68
+## 69  1.898585 2.334491  69
+## 70  1.690144 2.018530  70
+## 71  1.870736 2.295082  71
+## 72  1.820545 2.241361  72
+## 73  1.810885 2.140753  73
+## 74  1.696239 2.046693  74
+## 75  1.848146 2.209632  75
+## 76  1.744134 2.125966  76
+## 77  1.836901 2.268414  77
+## 78  1.903663 2.304057  78
+## 79  1.672467 2.071097  79
+## 80  1.866229 2.303107  80
+## 81  1.766351 2.179824  81
+## 82  1.799946 2.149847  82
+## 83  1.603352 2.025507  83
+## 84  1.837171 2.189856  84
+## 85  1.767415 2.174879  85
+## 86  1.898412 2.318471  86
+## 87  1.672686 2.023891  87
+## 88  1.872905 2.271626  88
+## 89  2.015941 2.465607  89
+## 90  1.913949 2.335074  90
+## 91  1.930481 2.304991  91
+## 92  1.804119 2.228152  92
+## 93  1.768044 2.179842  93
+## 94  1.875094 2.403415  94
+## 95  1.688662 2.221422  95
+## 96  1.869576 2.215035  96
+## 97  1.763146 2.253624  97
+## 98  1.864914 2.292133  98
+## 99  1.946845 2.329600  99
+## 100 1.712754 2.071801 100</code></pre>
+<p> </p>
+</div>
+<div id="plot-the-100-confidence-intervals" class="section level3">
+<h3>Plot the 100 Confidence Intervals:</h3>
+<p>In the following code, we use the <code>ggplot</code> function to plot 100 simulated intervals from above.</p>
+<pre class="r"><code>ggplot(ci, aes(y = id, color = (lb &gt; 2 | ub &lt; 2))) + 
+  geom_linerange(aes(xmin = lb, xmax = ub)) +
+  geom_vline(xintercept = 2, lty=2) +
+  scale_color_manual(values = c(&quot;black&quot;, &quot;#ff66ad&quot;)) +
+  theme(legend.position = &quot;none&quot;)</code></pre>
+<p><img src="01-index_files/figure-html/plot-1.png" width="450" style="display: block; margin: auto;" /></p>
+<p><strong>What percent of the intervals contain the true parameter <span class="math inline">\(\mathbf{2}\)</span>?</strong></p>
+<p><span class="math display">\[\frac{95 \small\text{ intervals}}{100\small\text{ intervals}}=95\texttt{%}\]</span></p>
+<p>In the above exercise, we’re selecting 100 different samples and computing each of their interval estimates in order to get an approximation as close to the true population parameter. The figure we created above plots 100 simulated intervals represented by horizontal lines where the <span style="color:#001d47;"><strong>black</strong></span> lines represent the intervals that contain the true parameter <span class="math inline">\(\mathbf{2}\)</span> and the <span style="color:#ff66ad;"><strong>red</strong></span> lines represent the intervals that do <strong>not</strong> contain the true parameter. From the figure, we can calculate the percent of the intervals that contain the true parameter <span class="math inline">\(\mathbf{2}\)</span> by dividing all of the black lines by the total number of lines: <span class="math inline">\(\frac{95}{100}=95\texttt{%}\)</span>.</p>
+<hr />
+</div>
+</div>
+<div id="code-appendix" class="section level2">
+<h2>Code Appendix</h2>
+<pre class="r"><code>library(knitr)
+knitr::opts_chunk$set(echo = TRUE, eval = TRUE)
+  
+library(purrr)
+library(ggplot2)
+set.seed(7)
+n &lt;- 100 ## sample 100 people
+sample &lt;- data.frame(
+  Age = rnorm(n,  mean = 30,  sd = 10)
+)
+sample$Wage &lt;- 2 * sample$Age + rnorm(n, mean = 0, sd = 10)
+head(sample)
+n &lt;- 100
+sample2 &lt;- data.frame(
+  Age = rnorm(n, mean = 30, sd = 10)
+)
+sample2$Wage &lt;- 2 * sample2$Age + rnorm(n, 0, 10) 
+head(sample2)
+Model &lt;- lm(Wage ~ Age, data = sample) ## Sample 1
+Model2 &lt;- lm(Wage ~ Age, data = sample2) ## Sample 2
+confint(Model)
+confint(Model2)
+get_ci &lt;- function(id) {
+  sample &lt;- data.frame(
+    Age = rnorm(n, mean = 30, sd = 10)
+  )
+  sample$Wage &lt;- 2* sample$Age + rnorm(n, 0, 10)
+  model &lt;- lm(Wage ~ Age, data = sample)
+  return(
+    data.frame(
+      lb = confint(model)[2,1],
+      ub = confint(model)[2,2],
+      id = id
+    ))}
+## map function call 100 times
+set.seed(7)
+ci &lt;- map_df(1:100, get_ci)
+ci
+ggplot(ci, aes(y = id, color = (lb &gt; 2 | ub &lt; 2))) + 
+  geom_linerange(aes(xmin = lb, xmax = ub)) +
+  geom_vline(xintercept = 2, lty=2) +
+  scale_color_manual(values = c(&quot;black&quot;, &quot;#ff66ad&quot;)) +
+  theme(legend.position = &quot;none&quot;)</code></pre>
+<hr />
+</div>
+<div id="references" class="section level2 unnumbered">
+<h2 class="unnumbered">References</h2>
+<div id="refs" class="references">
+<div id="ref-dalpiazAppliedStatistics2016">
+<p>[1] <span class="smallcaps">Dalpiaz</span>, D. (2016). <em>Applied Statistics with R</em>. STAT 420 at UIUC.</p>
+</div>
+<div id="ref-farawayLinearModels2004">
+<p>[2] <span class="smallcaps">Faraway</span>, J. J. (2004). <em>Linear Models with R</em>. Chapman and Hall/CRC.</p>
+</div>
+<div id="ref-jamesIntroductionStatisticalLearning2013">
+<p>[3] <span class="smallcaps">James</span>, G., <span class="smallcaps">Witten</span>, D., <span class="smallcaps">Hastie</span>, T. and <span class="smallcaps">Tibshirani</span>, R. (2013). <em>An Introduction to Statistical Learning</em>. vol 103 Springer New York, New York, NY.</p>
+</div>
+<div id="ref-mcgowan">
+<p>[4] <span class="smallcaps">McGowan</span>, L. D. (2020). Linear models. <em>STA 312</em>.</p>
+</div>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
