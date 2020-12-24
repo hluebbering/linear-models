@@ -98,7 +98,7 @@ To find the $\hat \beta$ that is going to minimize this RSS,
 $$\frac{\partial RSS}{\partial\hat\beta}=-2\mathbf{X}^T\mathbf{y}+2\mathbf{X}^T\mathbf{X}\hat\beta = 0$$
 
 
-Solving for $\hat \beta$
+#### Solving for $\hat \beta$
 
 $$
 \begin{align}
@@ -117,12 +117,12 @@ $$\large \hat\beta = {\bf (X^TX)^{-1} X^T \mathcal{y}}$$
 
 \ 
 
-**What is $\hat \beta$?**
+<span class="sp6">a.</span> What is $\hat \beta$? 
 
 - The coefficient for $x$ is $\hat \beta$. A one-unit increase in $x$ yields an expected increase in $y$ of $\hat \beta$ holding all other variables constant.
 
 
-**The hat matrix puts a 🎓 on y:**
+<span class="sp6">b.</span> The hat matrix puts a 🎓 on y:
 
 
 $$
@@ -136,7 +136,7 @@ $$
 
 \ 
 
-<span class="sp6">a.</span> Why is the hat matrix called the hat matrix?
+<span class="sp6">c.</span> Why is the hat matrix called the hat matrix?
 
 
 $$
@@ -152,7 +152,7 @@ $$
 $$
 \begin{align}
 &\bf{I} = AA^{-1}  =
-\tiny \begin{bmatrix}
+\begin{bmatrix}
 {\bf 1} & 0 & \dots & 0 \\
 0 & {\bf 1} & \dots & 0 \\
 \vdots & \vdots & \ddots & \vdots \\
@@ -175,10 +175,6 @@ $$
 Next, we learn what it means to be biased. In the following, we show how to prove that $\hat \beta$ is an **unbiased estimator**.
 
 
-\ 
-
-<div class="b1">
-
 $$
 \begin{align}
 \rm{if} \quad \mathbf{E[\hat \beta - \beta]} &= 0  \\
@@ -187,9 +183,6 @@ $$
 \end{align}
 $$
 
-</div>
-
-\ 
 
 Hence, the above proves $\hat \beta$ is an unbiased estimator for the parameter $\beta$. 
 
@@ -257,13 +250,8 @@ $$\hat \sigma^2 = \frac{RSS}{(n-(p+1))}$$
 
 To derive this, we needed the fact that $\mathbf{I-H}$ is idempotent and the rule where we can take the expected value of a particular form of matrices that involves the **trace**. We then talk about what the trace is and how we can estimate it for the hat matrix as well for the identity matrix, which is how we got the $\mathbf{(n-(p+1))}$ piece. The $\hat \sigma^2$ value is an important piece for calculating the variance and covariance and variance/covariance matrix for the variance of $\hat \beta$:
 
-
-\ 
-<div class="b1">
-
 $$\mathrm{var}(\hat \beta)=\hat \sigma^2(X^TX)^{-1}$$
 
-</div>
 
 \ 
 

@@ -427,7 +427,8 @@ RSS &amp;= (\mathbf{y} - \mathbf{X}\hat\beta)^T(\mathbf{y}-\mathbf{X}\hat\beta) 
 \]</span></p>
 <p>To find the <span class="math inline">\(\hat \beta\)</span> that is going to minimize this RSS,</p>
 <p><span class="math display">\[\frac{\partial RSS}{\partial\hat\beta}=-2\mathbf{X}^T\mathbf{y}+2\mathbf{X}^T\mathbf{X}\hat\beta = 0\]</span></p>
-<p>Solving for <span class="math inline">\(\hat \beta\)</span></p>
+<div id="solving-for-hat-beta" class="section level4">
+<h4>Solving for <span class="math inline">\(\hat \beta\)</span></h4>
 <p><span class="math display">\[
 \begin{align}
 -2\mathbf{X}^T\mathbf{y}+2\mathbf{X}^T\mathbf{X}\hat\beta &amp;= 0\\
@@ -441,11 +442,11 @@ RSS &amp;= (\mathbf{y} - \mathbf{X}\hat\beta)^T(\mathbf{y}-\mathbf{X}\hat\beta) 
 \]</span></p>
 <p><span class="math display">\[\large \hat\beta = {\bf (X^TX)^{-1} X^T \mathcal{y}}\]</span></p>
 <p> </p>
-<p><strong>What is <span class="math inline">\(\hat \beta\)</span>?</strong></p>
+<p><span class="sp6">a.</span> What is <span class="math inline">\(\hat \beta\)</span>?</p>
 <ul>
 <li>The coefficient for <span class="math inline">\(x\)</span> is <span class="math inline">\(\hat \beta\)</span>. A one-unit increase in <span class="math inline">\(x\)</span> yields an expected increase in <span class="math inline">\(y\)</span> of <span class="math inline">\(\hat \beta\)</span> holding all other variables constant.</li>
 </ul>
-<p><strong>The hat matrix puts a 🎓 on y:</strong></p>
+<p><span class="sp6">b.</span> The hat matrix puts a 🎓 on y:</p>
 <p><span class="math display">\[
 \begin{align}
 \hat y &amp;= Hy \\
@@ -454,7 +455,7 @@ RSS &amp;= (\mathbf{y} - \mathbf{X}\hat\beta)^T(\mathbf{y}-\mathbf{X}\hat\beta) 
 \end{align}
 \]</span></p>
 <p> </p>
-<p><span class="sp6">a.</span> Why is the hat matrix called the hat matrix?</p>
+<p><span class="sp6">c.</span> Why is the hat matrix called the hat matrix?</p>
 <p><span class="math display">\[
 \begin{align*}
 \hat y            &amp; = {\bf H} y \\
@@ -467,7 +468,7 @@ X (X^TX)^{-1} X^T        &amp; = \bf H \\
 <p><span class="math display">\[
 \begin{align}
 &amp;\bf{I} = AA^{-1}  =
-\tiny \begin{bmatrix}
+\begin{bmatrix}
 {\bf 1} &amp; 0 &amp; \dots &amp; 0 \\
 0 &amp; {\bf 1} &amp; \dots &amp; 0 \\
 \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
@@ -479,11 +480,10 @@ X (X^TX)^{-1} X^T        &amp; = \bf H \\
 <hr />
 </div>
 </div>
+</div>
 <div id="bias" class="section level2">
 <h2>Bias:</h2>
 <p>Next, we learn what it means to be biased. In the following, we show how to prove that <span class="math inline">\(\hat \beta\)</span> is an <strong>unbiased estimator</strong>.</p>
-<p> </p>
-<div class="b1">
 <p><span class="math display">\[
 \begin{align}
 \rm{if} \quad \mathbf{E[\hat \beta - \beta]} &amp;= 0  \\
@@ -491,8 +491,6 @@ X (X^TX)^{-1} X^T        &amp; = \bf H \\
 \rm{then} \quad \large\mathbf{\hat\beta} &amp;\, \small\textrm{ is an unbiased estimator} 
 \end{align}
 \]</span></p>
-</div>
-<p> </p>
 <p>Hence, the above proves <span class="math inline">\(\hat \beta\)</span> is an unbiased estimator for the parameter <span class="math inline">\(\beta\)</span>.</p>
 <p>Following this logic, it’s also important to discuss what it means to get the minimal variance. In doing so, we reuse the <span class="math inline">\(\mathrm{var}\mathbf{(\hat \beta)}\)</span> formula to establish the following inequality that defines what it means to be <span class="math inline">\({\color{Blue}{\texttt BLUE}}\)</span>.</p>
 <div id="gauss-markov-theorem" class="section level3">
@@ -526,10 +524,7 @@ X (X^TX)^{-1} X^T        &amp; = \bf H \\
 <p>When taking the expected value of the RSS, we used an expected value rule we already know about <span class="math inline">\(\mathbf{[y^T(I-H)y]}\)</span>. We also used that idempotent rule to reduce the <span class="math inline">\(I-H\)</span> term. The purpose of finding the residual sum of squares and its expected value is to get a good estimate for <span class="math inline">\(\hat \sigma^2\)</span>:</p>
 <p><span class="math display">\[\hat \sigma^2 = \frac{RSS}{(n-(p+1))}\]</span></p>
 <p>To derive this, we needed the fact that <span class="math inline">\(\mathbf{I-H}\)</span> is idempotent and the rule where we can take the expected value of a particular form of matrices that involves the <strong>trace</strong>. We then talk about what the trace is and how we can estimate it for the hat matrix as well for the identity matrix, which is how we got the <span class="math inline">\(\mathbf{(n-(p+1))}\)</span> piece. The <span class="math inline">\(\hat \sigma^2\)</span> value is an important piece for calculating the variance and covariance and variance/covariance matrix for the variance of <span class="math inline">\(\hat \beta\)</span>:</p>
- 
-<div class="b1">
 <p><span class="math display">\[\mathrm{var}(\hat \beta)=\hat \sigma^2(X^TX)^{-1}\]</span></p>
-</div>
 <p> </p>
 <div id="rss-review" class="section level3">
 <h3>RSS Review</h3>
