@@ -13,13 +13,22 @@
 
 <title>Model Diagnostics</title>
 
-<script src="site_libs/header-attrs-2.6/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.9/header-attrs.js"></script>
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
 <script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
@@ -39,11 +48,6 @@
     </style>
 
 <style type="text/css">code{white-space: pre;}</style>
-<style type="text/css">
-  pre:not([class]) {
-    background-color: white;
-  }
-</style>
 <script type="text/javascript">
 if (window.hljs) {
   hljs.configure({languages: []});
@@ -56,35 +60,31 @@ if (window.hljs) {
 
 
 
+
 <style type="text/css">
-h1 {
-  font-size: 34px;
+/* for pandoc --citeproc since 2.11 */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
 }
-h1.title {
-  font-size: 38px;
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
 }
-h2 {
-  font-size: 30px;
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
 }
-h3 {
-  font-size: 24px;
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
 }
-h4 {
-  font-size: 18px;
-}
-h5 {
-  font-size: 16px;
-}
-h6 {
-  font-size: 12px;
-}
-.table th:not([align]) {
-  text-align: left;
+div.csl-indent {
+  margin-left: 2em;
 }
 </style>
 
-
-<link rel="stylesheet" href="assets/styles1.css" type="text/css" />
+<link rel="stylesheet" href="assets/styles.css" type="text/css" />
 
 
 
@@ -93,10 +93,6 @@ h6 {
   max-width: 940px;
   margin-left: auto;
   margin-right: auto;
-}
-code {
-  color: inherit;
-  background-color: rgba(0, 0, 0, 0.04);
 }
 img {
   max-width:100%;
@@ -113,40 +109,13 @@ button.code-folding-btn:focus {
 summary {
   display: list-item;
 }
+pre code {
+  padding: 0;
+}
 </style>
 
 
 <style type="text/css">
-/* padding for bootstrap navbar */
-body {
-  padding-top: 51px;
-  padding-bottom: 40px;
-}
-/* offset scroll position for anchor links (for fixed navbar)  */
-.section h1 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h2 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h3 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h4 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h5 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h6 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
 .dropdown-submenu {
   position: relative;
 }
@@ -174,7 +143,7 @@ body {
   margin-right: -10px;
 }
 .dropdown-submenu:hover>a:after {
-  border-left-color: #ffffff;
+  border-left-color: #adb5bd;
 }
 .dropdown-submenu.pull-left {
   float: none;
@@ -186,7 +155,7 @@ body {
 }
 </style>
 
-<script>
+<script type="text/javascript">
 // manage active state of menu based on current page
 $(document).ready(function () {
   // active menu anchor
@@ -197,10 +166,23 @@ $(document).ready(function () {
   var menuAnchor = $('a[href="' + href + '"]');
 
   // mark it active
-  menuAnchor.parent().addClass('active');
+  menuAnchor.tab('show');
 
   // if it's got a parent navbar menu mark it active as well
   menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
 });
 </script>
 
@@ -212,7 +194,6 @@ $(document).ready(function () {
   max-height: 500px;
   min-height: 44px;
   overflow-y: auto;
-  background: white;
   border: 1px solid #ddd;
   border-radius: 4px;
 }
@@ -338,7 +319,7 @@ div.tocify {
 
 
 <!-- setup 3col/9col grid for toc_float and main content  -->
-<div class="row-fluid">
+<div class="row">
 <div class="col-xs-12 col-sm-4 col-md-3">
 <div id="TOC" class="tocify">
 </div>
@@ -375,7 +356,7 @@ div.tocify {
   </div><!--/.container -->
 </div><!--/.navbar -->
 
-<div class="fluid-row" id="header">
+<div id="header">
 
 
 
@@ -384,256 +365,346 @@ div.tocify {
 </div>
 
 
-<hr />
-<div id="checking-assumptions" class="section level2">
-<h2>Checking Assumptions</h2>
-<table class="table table-striped" style="font-size: 14px; width: auto !important; margin-left: auto; margin-right: auto;">
-<thead>
-<tr>
-<th style="text-align:left;color: darkseagreen !important;">
-Assumptions
-</th>
-<th style="text-align:left;color: darkseagreen !important;">
-Checking Assumptions
-</th>
-<th style="text-align:left;color: darkseagreen !important;">
-Fixing Violated Assumptions
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left;color: slategray !important;">
-Linearity
-</td>
-<td style="text-align:left;">
-Residuals vs. Fits Plots
-</td>
-<td style="text-align:left;">
-Transformations
-</td>
-</tr>
-<tr>
-<td style="text-align:left;color: slategray !important;">
-Constant Variance
-</td>
-<td style="text-align:left;">
-Residuals vs. Fits Plots
-</td>
-<td style="text-align:left;">
-Weighted/Generalized Least Squares (WLS/GLS)
-</td>
-</tr>
-<tr>
-<td style="text-align:left;color: slategray !important;">
-Normality
-</td>
-<td style="text-align:left;">
-Q-Q Plot
-</td>
-<td style="text-align:left;">
-Robust Regression
-</td>
-</tr>
-<tr>
-<td style="text-align:left;color: slategray !important;">
-Correlated Errors
-</td>
-<td style="text-align:left;">
-Structure of the data
-</td>
-<td style="text-align:left;">
-Generalized Least Squares (GLS)
-</td>
-</tr>
-</tbody>
-</table>
-<div id="unusual-observations" class="section level3">
-<h3>Unusual Observations</h3>
-<table class="table table-striped" style="font-size: 14px; width: auto !important; margin-left: auto; margin-right: auto;">
-<thead>
-<tr>
-<th style="text-align:left;color: darkseagreen !important;">
-Unusual Observations
-</th>
-<th style="text-align:left;color: darkseagreen !important;">
-Calculated As
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left;color: slategray !important;">
-Leverage
-</td>
-<td style="text-align:left;">
-<span class="math inline">\(\underbrace{H_{ii} = h_i}_{\text{diagonals of the hat matrix}}\)</span>
-</td>
-</tr>
-<tr>
-<td style="text-align:left;color: slategray !important;">
-Outliers
-</td>
-<td style="text-align:left;">
-<span class="math inline">\(\underbrace{r_i = \frac{e_i}{s_e\sqrt{1 - h_i}}}_{\text{standardized residual}}\)</span>
-</td>
-</tr>
-<tr>
-<td style="text-align:left;color: slategray !important;">
-Influential Points
-</td>
-<td style="text-align:left;">
-<span class="math inline">\(\underbrace{D_i = \frac{1}{p}r_i^2\frac{h_i}{1-{h_i}}}_{\text{Cook&#39;s Distance}}\)</span>
-</td>
-</tr>
-</tbody>
-</table>
-<hr />
-</div>
-</div>
-<div id="packages" class="section level2">
-<h2>Packages</h2>
-<p>In this lab we will work with the packages <code>faraway</code> and <code>visdat</code>.</p>
-<pre class="r"><code>library(faraway) 
-library(visdat)</code></pre>
-<div id="data" class="section level3">
-<h3>Data</h3>
-<p>We will work with the data frame <code>mammalsleep</code>, from the faraway package. To load the data add the following to the .Rmd file:</p>
-<pre class="r"><code>data(&quot;mammalsleep&quot;)</code></pre>
-<p>To find out more about the dataset, type the following in your Console: ?mammalsleep. A question mark before the name of an object will always bring up its help file. This command must be ran in the Console.</p>
-<div id="a-description-of-the-data" class="section level4">
-<h4>A description of the data:</h4>
-<p>The mammalsleep dataframe holds data for the study of sleep in mammals. The data frame contains 62 observations and 10 variables. The variables include <code>body</code> in kg, <code>brain</code> in g, <code>nondream</code> (hrs/day), <code>dream</code> (hrs/day), <code>sleep</code> (hrs/day), <code>lifespan</code> in years, <code>gestation</code> time in days, <code>predation</code> index, <code>exposure</code> index, and <code>danger</code> index.</p>
-<hr />
-</div>
-</div>
-</div>
-<div id="conceptual-exercises" class="section level2">
-<h2>Conceptual Exercises</h2>
-<p>In the following, we want to find the best fitted model for predicting <strong>sleep</strong>.</p>
-<div id="run-a-visdat-analysis-on-the-data" class="section level3">
-<h3>1. Run a <code>visdat</code> analysis on the data</h3>
-<p>We can use the visdat package to visualize the mammalsleep dataset as follows:</p>
+<p>In this lab we will work with the packages <code>faraway</code> and <code>visdat</code>. We will work with the data frame <code>mammalsleep</code>, from the faraway package. First, we load the data into our environment:</p>
+<pre class="r"><code>library(faraway)
+library(visdat)
+data(mammalsleep)</code></pre>
+<p><span class="math inline">\(\require{color}\definecolor{teall}{RGB}{58, 171, 174} \definecolor{bluemoon}{RGB}{62, 71, 125}\definecolor{gween}{RGB}{73, 175, 129}\)</span></p>
+<div id="find-the-best-fitted-model-for-predicting-sleep." class="section level2">
+<h2><span class="sp11">1. </span> Find the best fitted model for predicting sleep.</h2>
+<p><strong><span class="lp11">a. </span> Run a visdat analysis on the data:</strong></p>
+<p>We use the <code>visdat</code> package to visualize everything inside of the mammalsleep dataframe. From this plot, we can identify each variables’ class and whether the values are missing.</p>
+<pre class="r"><code>vis_dat(mammalsleep)</code></pre>
 <div class="figure" style="text-align: center">
-<img src="01-index_files/figure-html/Visdat-1.png" alt="From the visdat output, we can see the number of missing values for the variables nondream, sleep, lifespan, and gestation." width="500" />
+<img src="01-index_files/figure-html/Visdat-1.png" alt="The visdat output shows the number of missing values for variables nondream, sleep, lifespan, and gestation." width="450" />
 <p class="caption">
-From the visdat output, we can see the number of missing values for the variables nondream, sleep, lifespan, and gestation.
+The visdat output shows the number of missing values for variables nondream, sleep, lifespan, and gestation.
 </p>
 </div>
-<hr />
-</div>
-<div id="fit-a-squares-regression-model-to-predict-sleep" class="section level3">
-<h3>2. Fit a squares regression model to predict Sleep</h3>
-<p>We have a dataset that contains 62 observations, and we will be using 7 variables in our model: body weight, brain weight, lifespan, gestation time, prediction index, sleep exposure index, and danger We removed observations with missing values for the outcome sleep and the predictors lifespan, or gestation.</p>
+<p> </p>
+<p><strong><span class="lp11">b. </span> Fit a squares regression model to predict Sleep:</strong></p>
+<p>Our dataset contains 62 observations, and we’ll use the following 7 variables in our model: body weight, brain weight, lifespan, gestation time, prediction index, sleep exposure index, and danger. But first, we remove observations with missing values for the outcome sleep and the predictors lifespan, or gestation.</p>
+<pre class="r"><code>df &lt;- mammalsleep[(!is.na(mammalsleep$sleep) &amp;
+                     !is.na(mammalsleep$lifespan) &amp;
+                     !is.na(mammalsleep$gestation)),]</code></pre>
 <pre class="r"><code>mod &lt;- lm(sleep ~ body + brain + lifespan + gestation +
             predation + exposure + danger, 
           data = df)</code></pre>
-<hr />
-</div>
-<div id="test-the-model-assumptions" class="section level3">
-<h3>3. Test the model assumptions</h3>
-<div id="constant-variance-assumption" class="section level4">
-<h4>Constant Variance Assumption</h4>
+<p> </p>
+<p><strong><span class="lp11">c. </span> Test the model assumptions:</strong></p>
+<p><code>Constant Variance Assumption.</code></p>
 <div class="figure" style="text-align: center">
-<img src="01-index_files/figure-html/Resid-Fit-1.png" alt="Residuals vs. Fits plot to examine non-linearity and constant variance assumptions." width="500" />
+<img src="01-index_files/figure-html/Resid-Fit-1.png" alt="Residuals vs. Fits plot to examine non-linearity and constant variance assumptions." width="450" />
 <p class="caption">
 Residuals vs. Fits plot to examine non-linearity and constant variance assumptions.
 </p>
 </div>
+<p> </p>
 <p>From the above Residuals vs. Fits plot, there aren’t enough observations to make a sound conclusion. Linearity looks okay. Though, we should be a little worried about the constant variance assumption because it seems the points fan out from a thinner to a wider extent.</p>
 <p> </p>
-</div>
-<div id="normality-assumption" class="section level4">
-<h4>Normality Assumption</h4>
+<p><code>Normality Assumption.</code></p>
 <div class="figure" style="text-align: center">
-<img src="01-index_files/figure-html/Normality-1.png" alt="Q-Q plot to check normality of the residuals" width="500" />
+<img src="01-index_files/figure-html/Normality-1.png" alt="Q-Q plot to check normality of the residuals" width="450" />
 <p class="caption">
 Q-Q plot to check normality of the residuals
 </p>
 </div>
+<p> </p>
 <p>There seems to be a little deviation for the upper plot, which suggests that there are outliers present. So, maybe we should use a different model.</p>
 <p> </p>
-<hr />
-</div>
-</div>
-<div id="test-the-transformed-model-assumptions" class="section level3">
-<h3>4. Test the transformed model assumptions</h3>
-<div id="take-the-log-of-the-predictor" class="section level4">
-<h4>Take the log of the predictor:</h4>
-<pre class="r"><code>modLog &lt;- lm(log(sleep) ~ body + brain + lifespan + gestation +
-            predation + exposure + danger, 
-          data = df)</code></pre>
-</div>
-<div id="test-the-model-assumptions-1" class="section level4">
-<h4>Test the model assumptions:</h4>
+<p><strong><span class="lp11">d. </span> Test the transformed model assumptions:</strong></p>
+<p>Here, we transform our linear regression by taking the <span class="math inline">\(\small\log\)</span> of the predictor variable as follows.</p>
+<pre class="r"><code>modLog &lt;- lm(log(sleep) ~ body + brain + lifespan + 
+               gestation + predation + exposure + 
+               danger, data = df)</code></pre>
+<p> </p>
+<p>Now, we test the model assumptions, similar to the above, for the transformed model.</p>
 <div class="figure" style="text-align: center">
 <img src="01-index_files/figure-html/Resid-Fit-Log-1.png" alt="Residuals vs. Fits plot to examine non-linearity and constant variance assumptions and Q-Q plot to check normality of the residuals" width="330" /><img src="01-index_files/figure-html/Resid-Fit-Log-2.png" alt="Residuals vs. Fits plot to examine non-linearity and constant variance assumptions and Q-Q plot to check normality of the residuals" width="330" />
 <p class="caption">
 Residuals vs. Fits plot to examine non-linearity and constant variance assumptions and Q-Q plot to check normality of the residuals
 </p>
 </div>
+<p> </p>
 <p>Looking at the different plots, we can see that there are no significant improvements between the two models. Therefore, we will stick to the original squares regression model. Because we have a relatively small sample of 61 observations, we might violate some of the assumptions.</p>
-<hr />
-</div>
-</div>
-<div id="interpret-the-models-coefficients" class="section level3">
-<h3>5. Interpret the Model’s Coefficients</h3>
-<div id="forest-plot" class="section level4">
-<h4>Forest Plot</h4>
+<p> </p>
+<p><strong><span class="lp11">e. </span> Interpret the Model’s Coefficients:</strong></p>
+<p>From above, we conclude that the original squares regression model is the better fit as opposed to a transformed model fit. Hence, we re-define our model as follows and evaluate its coefficients using <code>tidy</code>.</p>
+<pre class="r"><code>mod &lt;- lm(sleep ~ body + brain + lifespan + gestation +
+            predation + exposure + danger, 
+          data = df)
+
+mod_table &lt;- tidy(mod, conf.int = TRUE)</code></pre>
+<p> </p>
+<table class="table table-striped table-condensed" style="font-size: 11px; width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+term
+</th>
+<th style="text-align:right;">
+estimate
+</th>
+<th style="text-align:right;">
+std.error
+</th>
+<th style="text-align:right;">
+statistic
+</th>
+<th style="text-align:right;">
+p.value
+</th>
+<th style="text-align:right;">
+conf.low
+</th>
+<th style="text-align:right;">
+conf.high
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+(Intercept)
+</td>
+<td style="text-align:right;">
+16.6036994
+</td>
+<td style="text-align:right;">
+1.0781762
+</td>
+<td style="text-align:right;">
+15.399802
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+14.4293499
+</td>
+<td style="text-align:right;">
+18.7780489
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+body
+</td>
+<td style="text-align:right;">
+-0.0016015
+</td>
+<td style="text-align:right;">
+0.0014639
+</td>
+<td style="text-align:right;">
+-1.094016
+</td>
+<td style="text-align:right;">
+0.2800386
+</td>
+<td style="text-align:right;">
+-0.0045537
+</td>
+<td style="text-align:right;">
+0.0013507
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+brain
+</td>
+<td style="text-align:right;">
+0.0023193
+</td>
+<td style="text-align:right;">
+0.0016139
+</td>
+<td style="text-align:right;">
+1.437113
+</td>
+<td style="text-align:right;">
+0.1579230
+</td>
+<td style="text-align:right;">
+-0.0009354
+</td>
+<td style="text-align:right;">
+0.0055740
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+lifespan
+</td>
+<td style="text-align:right;">
+-0.0398297
+</td>
+<td style="text-align:right;">
+0.0353662
+</td>
+<td style="text-align:right;">
+-1.126209
+</td>
+<td style="text-align:right;">
+0.2663232
+</td>
+<td style="text-align:right;">
+-0.1111523
+</td>
+<td style="text-align:right;">
+0.0314930
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+gestation
+</td>
+<td style="text-align:right;">
+-0.0164652
+</td>
+<td style="text-align:right;">
+0.0062143
+</td>
+<td style="text-align:right;">
+-2.649570
+</td>
+<td style="text-align:right;">
+0.0112300
+</td>
+<td style="text-align:right;">
+-0.0289975
+</td>
+<td style="text-align:right;">
+-0.0039329
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+predation
+</td>
+<td style="text-align:right;">
+2.3933611
+</td>
+<td style="text-align:right;">
+0.9711013
+</td>
+<td style="text-align:right;">
+2.464584
+</td>
+<td style="text-align:right;">
+0.0177895
+</td>
+<td style="text-align:right;">
+0.4349487
+</td>
+<td style="text-align:right;">
+4.3517736
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+exposure
+</td>
+<td style="text-align:right;">
+0.6329225
+</td>
+<td style="text-align:right;">
+0.5585726
+</td>
+<td style="text-align:right;">
+1.133107
+</td>
+<td style="text-align:right;">
+0.2634478
+</td>
+<td style="text-align:right;">
+-0.4935465
+</td>
+<td style="text-align:right;">
+1.7593916
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+danger
+</td>
+<td style="text-align:right;">
+-4.5085714
+</td>
+<td style="text-align:right;">
+1.1861175
+</td>
+<td style="text-align:right;">
+-3.801117
+</td>
+<td style="text-align:right;">
+0.0004491
+</td>
+<td style="text-align:right;">
+-6.9006054
+</td>
+<td style="text-align:right;">
+-2.1165374
+</td>
+</tr>
+</tbody>
+</table>
+<p> </p>
+<p>The above summarizes information about the components of our final model, displaying each explanatory variables’ estimate, standard error, F Statistic, p-value, and the confidence interval bounds. Further assessing the model’s coefficients, we create a <code>Forest-Plot</code> to visualize the measures of effect of each explanatory variable and their confidence intervals.</p>
+<p> </p>
 <div class="figure" style="text-align: center">
-<img src="01-index_files/figure-html/Forest-Plot-1.png" alt="Forest Plot" width="500" />
+<img src="01-index_files/figure-html/Forest-Plot-1.png" alt="Forest Plot" width="450" />
 <p class="caption">
 Forest Plot
 </p>
 </div>
-<p>It looks like there are two important variables: predation index and danger index. If we’re already including danger and predation, we don’t necessarily need to include the sleep exposure index.</p>
-</div>
-<div id="final-model" class="section level4">
-<h4>Final Model:</h4>
-<p>We choose not to include the sleep exposure index because the danger index is a combination of the predation and exposure index. Therefore, the danger index consists of the information we might gain from exposure.</p>
+<p> </p>
+<p>It looks like there are two important variables: predation index and danger index. Based on the above, if we’re already including danger and predation, we don’t necessarily need to include the sleep exposure index.</p>
+<p> </p>
+<p><strong><span class="lp11">f. </span> The Final Model:</strong></p>
+<p>Here, we form our final model based on the above analysis of various linear model fits. We choose not to include the sleep exposure index because the danger index is a combination of the predation and exposure index. Therefore, the danger index consists of the information we might gain from exposure.</p>
 <pre class="r"><code>mod &lt;- lm(sleep ~ body + brain + lifespan + gestation +
-            predation + danger, 
-          data = df)
+            predation + danger, data = df)
 
 mod_table &lt;- tidy(mod, conf.int = TRUE)</code></pre>
-<table class="table table-striped" style="font-size: 13px; width: auto !important; margin-left: auto; margin-right: auto;">
+<table class="table table-striped table-condensed" style="font-size: 11px; width: auto !important; margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
 <th style="empty-cells: hide;border-bottom:hidden;" colspan="5">
 </th>
-<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; color: slategray !important;" colspan="2">
+<th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2">
 <div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
 95% Confidence Interval
 </div>
 </th>
 </tr>
 <tr>
-<th style="text-align:left;color: darkslategray !important;font-size: 14px;">
+<th style="text-align:left;">
 Term
 </th>
-<th style="text-align:right;color: darkslategray !important;font-size: 14px;">
+<th style="text-align:right;">
 Estimate
 </th>
-<th style="text-align:right;color: darkslategray !important;font-size: 14px;">
+<th style="text-align:right;">
 SE
 </th>
-<th style="text-align:right;color: darkslategray !important;font-size: 14px;">
+<th style="text-align:right;">
 Statistic
 </th>
-<th style="text-align:right;color: darkslategray !important;font-size: 14px;">
+<th style="text-align:right;">
 p-value
 </th>
-<th style="text-align:right;color: darkslategray !important;font-size: 14px;">
+<th style="text-align:right;">
 Lower Bound
 </th>
-<th style="text-align:right;color: darkslategray !important;font-size: 14px;">
+<th style="text-align:right;">
 Upper Bound
 </th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align:left;color: orchid !important;">
+<td style="text-align:left;">
 (Intercept)
 </td>
 <td style="text-align:right;">
@@ -656,7 +727,7 @@ Upper Bound
 </td>
 </tr>
 <tr>
-<td style="text-align:left;color: orchid !important;">
+<td style="text-align:left;">
 body
 </td>
 <td style="text-align:right;">
@@ -679,7 +750,7 @@ body
 </td>
 </tr>
 <tr>
-<td style="text-align:left;color: orchid !important;">
+<td style="text-align:left;">
 brain
 </td>
 <td style="text-align:right;">
@@ -702,7 +773,7 @@ brain
 </td>
 </tr>
 <tr>
-<td style="text-align:left;color: orchid !important;">
+<td style="text-align:left;">
 lifespan
 </td>
 <td style="text-align:right;">
@@ -725,7 +796,7 @@ lifespan
 </td>
 </tr>
 <tr>
-<td style="text-align:left;color: orchid !important;">
+<td style="text-align:left;">
 gestation
 </td>
 <td style="text-align:right;">
@@ -748,7 +819,7 @@ gestation
 </td>
 </tr>
 <tr>
-<td style="text-align:left;color: orchid !important;">
+<td style="text-align:left;">
 predation
 </td>
 <td style="text-align:right;">
@@ -771,7 +842,7 @@ predation
 </td>
 </tr>
 <tr>
-<td style="text-align:left;color: orchid !important;">
+<td style="text-align:left;">
 danger
 </td>
 <td style="text-align:right;">
@@ -795,151 +866,138 @@ danger
 </tr>
 </tbody>
 </table>
-<p>The variables body, brain, and lifespan have little impact on sleep duration when adjusting for body, brain, lifespan, gestation, predation, and danger, all with coefficients very close to <span class="math inline">\(0\)</span>.</p>
+<p> </p>
+<p>The variables body, brain, and lifespan have little impact on sleep duration when adjusting for body, brain, lifespan, gestation, predation, and danger, all with coefficients very close to <span class="math inline">\(\small 0\)</span>.</p>
 <ul>
-<li>A one day increase in lifespan yields an expected change in total sleep hours per day of <span class="math inline">\(-0.03\)</span> (95% CI: -0.10, 0.04) holding all other variables at constant.</li>
-<li>A one day increase in gestation time yields an expected change in total sleep hours per day of <span class="math inline">\(-0.01\)</span> (95% CI: -0.03, 0) holding all other variables at constant.</li>
-<li>A one unit change in predation index yields an expected change in total sleep of <span class="math inline">\(2.18\)</span> (95% CI: 0.25, 4.1) hours per day holding all other variables constant.</li>
-<li>A one unit change in danger index yields an expected change in total sleep of <span class="math inline">\(-3.83\)</span> (95% CI: -5.91, -1.76) hours per day holding all other variables constant.</li>
+<li>A one day increase in lifespan yields an expected change in total sleep hours per day of <span class="math inline">\({\small -0.03}\)</span> (95% CI: -0.10, 0.04) holding all other variables at constant.</li>
+<li>A one day increase in gestation time yields an expected change in total sleep hours per day of <span class="math inline">\({\small -0.01}\)</span> (95% CI: -0.03, 0) holding all other variables at constant.</li>
+<li>A one unit change in predation index yields an expected change in total sleep of <span class="math inline">\({\small 2.18}\)</span> (95% CI: 0.25, 4.1) hours per day holding all other variables constant.</li>
+<li>A one unit change in danger index yields an expected change in total sleep of <span class="math inline">\({\small -3.83}\)</span> (95% CI: -5.91, -1.76) hours per day holding all other variables constant.</li>
 </ul>
-<p><span class="math display">\[\hat Y = 16.49 - 0.001 X_1 + 0.002 X_2 - 0.03 X_3 - 0.01 X_4 + 2.18 X_5 - 3.83 X_6 + \varepsilon_{|x,i}\]</span></p>
+<p><span class="math display">\[
+\begin{gather}
+\color{darkgreen} \hat Y &amp; \equiv {\small 16.49 - .001 X_1 + .002 X_2 - .03 X_3 - .01 X_4 + 2.18 X_5 - 3.83 X_6} &amp; + {\large \varepsilon}_{\mathcal{\mid x,i}}
+\end{gather}
+\]</span></p>
 <hr />
 </div>
-</div>
-</div>
-<div id="code-appendix" class="section level2">
-<h2>Code Appendix</h2>
-<pre class="r"><code>knitr::opts_chunk$set(out.width = 500,fig.align = &quot;center&quot;, message = FALSE, warning = FALSE, echo = FALSE)
-library(ggplot2)
-library(broom)
-library(kableExtra)
-library(knitr)
-mod_table &lt;- data.frame(&quot;Assumptions&quot; = 
-             c(&quot;Linearity&quot;,
-               &quot;Constant Variance&quot;,
-               &quot;Normality&quot;,
-               &quot;Correlated Errors&quot; ),
-           &quot;Checking Assumptions&quot; = 
-             c(&quot;Residuals vs. Fits Plots&quot;,
-               &quot;Residuals vs. Fits Plots&quot;,
-               &quot;Q-Q Plot&quot;,
-               &quot;Structure of the data&quot; ),
-           &quot;Fixing Violations&quot; = 
-             c(&quot;Transformations&quot;,
-               &quot;Weighted/Generalized Least Squares (WLS/GLS)&quot;,
-               &quot;Robust Regression&quot;,
-               &quot;Generalized Least Squares (GLS)&quot; )
-           )
-
-kable(mod_table, col.names = 
-        c(&quot;Assumptions&quot;, &quot;Checking Assumptions&quot;, &quot;Fixing Violated Assumptions&quot;)) %&gt;%
-  kable_styling(full_width = FALSE, font_size = 14, bootstrap_options = &quot;striped&quot;) %&gt;%
-  collapse_rows(1) %&gt;%
-  row_spec(0, color = &quot;darkseagreen&quot;) %&gt;%
-  column_spec(1, color = &quot;slategray&quot;)
-mod_table &lt;- data.frame(&quot;Unusual Observations&quot; = 
-             c(&quot;Leverage&quot;,
-               &quot;Outliers&quot;,
-               &quot;Influential Points&quot;),
-             &quot;Calculated&quot; = 
-               c(&quot;$\\underbrace{H_{ii} = h_i}_{\\text{diagonals of the hat matrix}}$&quot;,
-                 &quot;$\\underbrace{r_i = \\frac{e_i}{s_e\\sqrt{1 - h_i}}}_{\\text{standardized residual}}$&quot;,
-                 &quot;$\\underbrace{D_i = \\frac{1}{p}r_i^2\\frac{h_i}{1-{h_i}}}_{\\text{Cook&#39;s Distance}}$&quot;)
-           )
-
-kable(mod_table, col.names = 
-        c(&quot;Unusual Observations&quot;, &quot;Calculated As&quot;)) %&gt;%
-  kable_styling(full_width = FALSE, font_size = 14, bootstrap_options = &quot;striped&quot;) %&gt;%
-  collapse_rows(1) %&gt;%
-  row_spec(0, color = &quot;darkseagreen&quot;) %&gt;%
-  column_spec(1, color = &quot;slategray&quot;)
-library(faraway) 
-library(visdat)
-data(&quot;mammalsleep&quot;)
-?mammalsleep
-vis_dat(mammalsleep)
-df &lt;- mammalsleep[(!is.na(mammalsleep$sleep) &amp;
-                     !is.na(mammalsleep$lifespan) &amp;
-                     !is.na(mammalsleep$gestation)),
-                  ]
-mod &lt;- lm(sleep ~ body + brain + lifespan + gestation +
-            predation + exposure + danger, 
-          data = df)
-check &lt;- data.frame(
-  e = resid(mod),
-  fit = fitted(mod)
-)
-
-ggplot(check, aes(x = fit, y = e)) +
-         geom_point() +
-         geom_hline(yintercept = 0, 
-                    col = &quot;plum&quot;) +
-  labs(y = &quot;Residuals&quot;, x = &quot;Fitted Values&quot;) +
-  theme_minimal()
-ggplot(check, aes(sample = e)) +
-  geom_qq() + 
-  geom_qq_line(color=&quot;darkseagreen&quot;) +
-  theme_minimal()
-modLog &lt;- lm(log(sleep) ~ body + brain + lifespan + gestation +
-            predation + exposure + danger, 
-          data = df)
-checkLog &lt;- data.frame(
-  e = resid(modLog),
-  fit = fitted(modLog)
-)
-
-ggplot(checkLog, aes(x = fit, y = e)) +
-         geom_point() +
-         geom_hline(yintercept = 0, 
-                    col = &quot;plum&quot;) +
-  labs(y = &quot;Residuals&quot;, x = &quot;Fitted Values&quot;) +
-  theme_minimal()
-
-ggplot(checkLog, aes(sample = e)) +
-  geom_qq() + 
-  geom_qq_line(color=&quot;darkseagreen&quot;) +
-  theme_minimal()
-mod &lt;- lm(sleep ~ body + brain + lifespan + gestation +
-            predation + exposure + danger, 
-          data = df)
-
-mod_table &lt;- tidy(mod, conf.int = TRUE)
-ggplot(mod_table[-1, ], aes(x = term, y = estimate,
-                      ymin = conf.low, ymax = conf.high)) +
-  geom_pointrange() + 
-  geom_hline(yintercept = 0, lty = 2, color = &quot;aquamarine4&quot;) +
-  coord_flip()
-mod &lt;- lm(sleep ~ body + brain + lifespan + gestation +
-            predation + danger, 
-          data = df)
-
-mod_table &lt;- tidy(mod, conf.int = TRUE)
-kable(mod_table, digits = 2, 
-      col.names = c(&quot;Term&quot;, &quot;Estimate&quot;, &quot;SE&quot;, &quot;Statistic&quot;, &quot;p-value&quot;, &quot;Lower Bound&quot;, &quot;Upper Bound&quot;)) %&gt;%
-  kable_styling(full_width = FALSE, 
-                font_size = 13,
-                bootstrap_options = &quot;striped&quot;) %&gt;%
-  collapse_rows(1, latex_hline = &#39;major&#39;) %&gt;%
-  column_spec(1, color = &quot;orchid&quot;) %&gt;%
-  row_spec(0, font_size=14, color = &quot;darkslategray&quot;) %&gt;%
-  add_header_above(c(&quot; &quot; = 5, &quot;95% Confidence Interval&quot; = 2), 
-                   color = c(&quot;black&quot;, &quot;slategray&quot;))</code></pre>
+<div id="checking-model-assumptions" class="section level2">
+<h2>Checking Model Assumptions</h2>
+<table class="table table-striped" style="font-size: 12px; width: auto !important; float: left; margin-right: 10px;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Assumptions
+</th>
+<th style="text-align:left;">
+Checking Assumptions
+</th>
+<th style="text-align:left;">
+Fixing Violated
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;color: slategray !important;">
+Linearity
+</td>
+<td style="text-align:left;">
+Residuals vs. Fits Plot
+</td>
+<td style="text-align:left;">
+Transformations
+</td>
+</tr>
+<tr>
+<td style="text-align:left;color: slategray !important;">
+Constant Variance
+</td>
+<td style="text-align:left;">
+Residuals vs. Fits Plot
+</td>
+<td style="text-align:left;">
+Weighted Least Squares
+</td>
+</tr>
+<tr>
+<td style="text-align:left;color: slategray !important;">
+Normality
+</td>
+<td style="text-align:left;">
+Q-Q Plot
+</td>
+<td style="text-align:left;">
+Robust Regression
+</td>
+</tr>
+<tr>
+<td style="text-align:left;color: slategray !important;">
+Correlated Error
+</td>
+<td style="text-align:left;">
+Structure of the data
+</td>
+<td style="text-align:left;">
+Generalized Least Squares
+</td>
+</tr>
+</tbody>
+</table>
+<table class="table table-striped" style="font-size: 12px; width: auto !important; ">
+<thead>
+<tr>
+<th style="text-align:left;">
+Unusual Observations
+</th>
+<th style="text-align:left;">
+Calculated As
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;color: slategray !important;">
+Leverage
+</td>
+<td style="text-align:left;">
+<span class="math inline">\(\small\underbrace{H_{ii} = h_i}_{\text{diagonals of the hat matrix}}\)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;color: slategray !important;">
+Outliers
+</td>
+<td style="text-align:left;">
+<span class="math inline">\(\underbrace{r_i = \frac{e_i}{s_e\sqrt{1 - h_i}}}_{\text{standardized residual}}\)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;color: slategray !important;">
+Influential Points
+</td>
+<td style="text-align:left;">
+<span class="math inline">\(\underbrace{D_i = \frac{1}{p}r_i^2\frac{h_i}{1-{h_i}}}_{\text{Cook&#39;s Distance}}\)</span>
+</td>
+</tr>
+</tbody>
+</table>
 <hr />
 </div>
 <div id="references" class="section level2 unnumbered">
 <h2 class="unnumbered">References</h2>
-<div id="refs" class="references">
-<div id="ref-dalpiazAppliedStatistics2016">
-<p>[1] <span class="smallcaps">Dalpiaz</span>, D. (2016). <em>Applied Statistics with R</em>. STAT 420 at UIUC.</p>
+<div id="refs" class="references csl-bib-body">
+<div id="ref-dalpiazAppliedStatistics2016" class="csl-entry">
+<div class="csl-left-margin">[1] </div><div class="csl-right-inline"><span class="smallcaps">Dalpiaz</span>, D. (2016). <em>Applied <span>Statistics</span> with <span>R</span></em>. <span>STAT 420 at UIUC</span>.</div>
 </div>
-<div id="ref-farawayLinearModels2004">
-<p>[2] <span class="smallcaps">Faraway</span>, J. J. (2004). <em>Linear Models with R</em>. Chapman and Hall/CRC.</p>
+<div id="ref-farawayLinearModels2004" class="csl-entry">
+<div class="csl-left-margin">[2] </div><div class="csl-right-inline"><span class="smallcaps">Faraway</span>, J. J. (2004). <em>Linear <span>Models</span> with <span>R</span></em>. <span>Chapman and Hall/CRC</span>.</div>
 </div>
-<div id="ref-jamesIntroductionStatisticalLearning2013">
-<p>[3] <span class="smallcaps">James</span>, G., <span class="smallcaps">Witten</span>, D., <span class="smallcaps">Hastie</span>, T. and <span class="smallcaps">Tibshirani</span>, R. (2013). <em>An Introduction to Statistical Learning</em>. vol 103 Springer New York, New York, NY.</p>
+<div id="ref-jamesIntroductionStatisticalLearning2013" class="csl-entry">
+<div class="csl-left-margin">[3] </div><div class="csl-right-inline"><span class="smallcaps">James</span>, G., <span class="smallcaps">Witten</span>, D., <span class="smallcaps">Hastie</span>, T. and <span class="smallcaps">Tibshirani</span>, R. (2013). <em>An <span>Introduction</span> to <span>Statistical Learning</span></em>. vol 103 <span>Springer New York</span>, <span>New York, NY</span>.</div>
 </div>
-<div id="ref-mcgowan">
-<p>[4] <span class="smallcaps">McGowan</span>, L. D. (2020). Linear models. <em>STA 312</em>.</p>
+<div id="ref-mcgowan" class="csl-entry">
+<div class="csl-left-margin">[4] </div><div class="csl-right-inline"><span class="smallcaps">McGowan</span>, L. D. (2020). Linear models. <em>STA 312</em>.</div>
 </div>
 </div>
 </div>
@@ -973,7 +1031,7 @@ $(document).ready(function () {
 
 $(document).ready(function () {
   $('.tabset-dropdown > .nav-tabs > li').click(function () {
-    $(this).parent().toggleClass('nav-tabs-open')
+    $(this).parent().toggleClass('nav-tabs-open');
   });
 });
 </script>
@@ -982,6 +1040,9 @@ $(document).ready(function () {
 
 <script>
 $(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
 
     // move toc-ignore selectors from section div to header
     $('div.section.toc-ignore')
