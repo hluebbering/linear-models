@@ -2,7 +2,7 @@
 title: "Linear Modeling in R"
 output:
   html_document: 
-    css: ./assets/styles1.css
+    css: ./assets/styles.css
     toc: yes
     toc_float: yes
     highlight: textmate
@@ -15,327 +15,20 @@ nocite: '@*'
 
 ```{r include=FALSE}
 library(knitr)
+library(kableExtra)
 knitr::opts_chunk$set(echo = FALSE, eval = TRUE, message = FALSE)
 ```
 
 
-
-## Random Matrices:
-
-In Linear Modeling, we begin by discussing Matrix Rules and Properties and learning about **Excepted Values** and **Covariances**, and **Variances**, all of which are Random Matrices.
-
-
-
-<span class="sp5">a.</span> **Expectation** describes the average value
-
-$$E[X] = \begin{cases}
-\sum_x xp_X(x) & X \textrm{ is a discrete random variable}\\
-\int_{-\infty}^{\infty}xf_X(x)dx & X \textrm{ is a continuous random variable}
-\end{cases}$$
-
-
-<span class="sp5">b.</span> **Covariance** is a measure of joint variability between two random variables
-
-$$cov(\mathbf{X},\mathbf{Y}) = E[(\mathbf{X} - E[\mathbf{X}])(\mathbf{Y} - E[\mathbf{Y}])]$$
-
-<span class="sp5">c.</span> **Variance** measures the spread of a variable
-
-$$var(\mathbf{X}) = cov(\mathbf{X}, \mathbf{X}) = E[\mathbf{X}^2] - E[\mathbf{X}]^2$$
-
-
-### Least Squares Estimation:
-
-
-The purpose of the **least squares estimation** is to estimate the relationship between various predictor variables $X$ and an outcome variable $Y$. In using this relationship, we must understand the **Law of Total Exception** and **Law of Total Variance** rules.
-
-
-\ 
-
-<div class="b1">
-
-$$\large \mathbf{y} = \mathbf{X} \beta + \epsilon$$
-
-</div>
-
-\ 
-
-As a result, we can take the **expected value** of $\hat \beta$, in which we want to show: 
-
-$$\mathbf{E[\hat{\beta}]=\beta}$$
-
-In order to prove the above equation, we must use the Law of Total Exception and various Matrix rules. We can also take the **variance of $\hat \beta$**:
-
-
-$$\rm{var}{(\mathbf{\hat \beta})} = \hat \sigma ^2 (\mathbf{X^TX})^{-1}$$
-
-In order to get the variance of $\hat \beta$, we have to calculate the variance/ covariance matrix using the properties of random matrices and the Law of Total Variance. 
-
-
-#### Summary:
-
-The overall idea of the **Law of Total Exception** and the **Law of Total Variance** rules allow us to calculate the **Expected Value** and **Variance** or our main estimator $\mathbf{\hat \beta}$ from the **Least Squares Estimator**.
-
-
-------------------------------------------------------
-
-## Deriving the Hat Matrix
-
-### Linear Regression Review
-
-
-$$
-\begin{align}
-RSS &= (\mathbf{y} - \mathbf{X}\hat\beta)^T(\mathbf{y}-\mathbf{X}\hat\beta) \\
-& = \mathbf{y}^T\mathbf{y}-\hat{\beta}^T\mathbf{X}^T\mathbf{y}-\mathbf{y}^T\mathbf{X}\hat\beta + \hat{\beta}^T\mathbf{X}^T\mathbf{X}\hat\beta\\
-&=\mathbf{y}^T\mathbf{y}-2\hat{\beta}^T\mathbf{X}^T\mathbf{y} + \hat{\beta}^T\mathbf{X}^T\mathbf{X}\hat\beta\\
-\end{align}
-$$
-
-
-To find the $\hat \beta$ that is going to minimize this RSS, 
-
-
-$$\frac{\partial RSS}{\partial\hat\beta}=-2\mathbf{X}^T\mathbf{y}+2\mathbf{X}^T\mathbf{X}\hat\beta = 0$$
-
-
-#### Solving for $\hat \beta$
-
-$$
-\begin{align}
--2\mathbf{X}^T\mathbf{y}+2\mathbf{X}^T\mathbf{X}\hat\beta &= 0\\
-2\mathbf{X}^T\mathbf{X}\hat\beta & = 2\mathbf{X}^T\mathbf{y} \\
-\mathbf{X}^T\mathbf{X}\hat\beta & =\mathbf{X}^T\mathbf{y} \\
-(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{X}\hat\beta &=(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{y}\\
-\underbrace{(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{X}}_{\mathbf{I}}\hat\beta &=(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{y}\\
-\mathbf{I}\hat\beta &= (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{y}\\
-\hat\beta & = (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{y}
-\end{align}
-$$
-
-$$\large \hat\beta = {\bf (X^TX)^{-1} X^T \mathcal{y}}$$
-
-
-\ 
-
-<span class="sp6">a.</span> What is $\hat \beta$? 
-
-- The coefficient for $x$ is $\hat \beta$. A one-unit increase in $x$ yields an expected increase in $y$ of $\hat \beta$ holding all other variables constant.
-
-
-<span class="sp6">b.</span> The hat matrix puts a 🎓 on y:
-
-
-$$
-\begin{align}
-\hat y &= Hy \\
-\hat y &= \bf X \hat \beta \\
-\hat{\mathbf{y}} &= \underbrace{\mathbf{X}(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T}_{\mathbf{H}}\mathbf{y}
-\end{align}
-$$
-
-
-\ 
-
-<span class="sp6">c.</span> Why is the hat matrix called the hat matrix?
-
-
-$$
-\begin{align*}
-\hat y            & = {\bf H} y \\
-\bf{X} \hat \beta & = {\bf H} y \\
-{\bf X} \; (X^TX)^{-1} X^T y \; & = {\bf H} y \\
-X (X^TX)^{-1} X^T        & = \bf H \\
-{\bf I} &= {\bf H}
-\end{align*}
-$$
-
-$$
-\begin{align}
-&\bf{I} = AA^{-1}  =
-\begin{bmatrix}
-{\bf 1} & 0 & \dots & 0 \\
-0 & {\bf 1} & \dots & 0 \\
-\vdots & \vdots & \ddots & \vdots \\
-0 & 0 & \dots & {\bf 1} 
-\end{bmatrix}
-\end{align}
-$$
-
-
-
-\ 
-
-
-
-------------------------------------------------------
-
-
-## Bias:
-
-Next, we learn what it means to be biased. In the following, we show how to prove that $\hat \beta$ is an **unbiased estimator**.
-
-
-$$
-\begin{align}
-\rm{if} \quad \mathbf{E[\hat \beta - \beta]} &= 0  \\
-\\
-\rm{then} \quad \large\mathbf{\hat\beta} &\, \small\textrm{ is an unbiased estimator} 
-\end{align}
-$$
-
-
-Hence, the above proves $\hat \beta$ is an unbiased estimator for the parameter $\beta$. 
-
-Following this logic, it's also important to discuss what it means to get the minimal variance. In doing so, we reuse the $\mathrm{var}\mathbf{(\hat \beta)}$ formula to establish the following inequality that defines what it means to be ${\color{Blue}{\texttt BLUE}}$.
-
-
-### Gauss Markov Theorem:
-
-
-${\color{Blue}{\texttt BLUE}}$ is the best linear unbiased estimator. We know the Least Squares Estimation returns the **best linear unbiased estimator** $\mathbf{\hat \beta}$, but how can we **prove** this? 
-
-
-\ 
-<div class="b1">
-
-$$\large \textrm{var}(\color{Blue}{\hat\beta}) = \color{Teal}{\hat\sigma^2} (\mathbf{X}^T\mathbf{X})^{-1}\leq \textrm{var}(\color{HotPink}{\tilde\beta})$$
-</div>
-
-
-\ 
-
-
-We want to prove what it means to be the **best** linear unbiased estimator. Hence, we want to show that $\hat \beta$ is better than some other parameter $\tilde \beta$ using the following inequality:
-
-$$\mathrm{var}(\hat\beta)=\hat \sigma^2(X^TX)^{-1} \le{\mathrm{var}(\bar \beta)}$$
-
-
-To solve this inequality, we need to use our information that we learned about **bias** to show that $\tilde\beta$ is unbiased:
-
-$$\bf E[\bar\beta - \beta]=0$$
-
-Next, in order to compare our $\hat\beta$ obtained from the **least squares estimation** to an unbiased linear estimator $\tilde\beta$, we must show the variance of $\tilde\beta$ using our Variance/Covariance rules. As a result, we can show that our $\hat \beta$ variance is smaller or equal to the variance of $\bar \beta$ for all cases.
-
-
-
--------------------------------------------------
-
-
-## Residual Sum of Squares
-
-Next, we learned about the **Residual Sum of Squares(RSS)**, which is the sum of the residuals squared.
-
-
-\ 
-<div class="b1">
-
-$$\large \mathbf{RSS}=\sum{e^2}$$
-
-</div>
-
-\ 
-
-We use the Matrix Rules to be able to get various pieces of the RSS. For example, we showed the excepted value of the RSS:
-
-$$E[e^Te]=\sigma^2(n-(p+1))$$
-
-We got this using the Trace and idempotent rules. 
-
-$$E[e^Te]=E\mathbf{[y^T(I-H)y]}$$
-
-When taking the expected value of the RSS, we used an expected value rule we already know about $\mathbf{[y^T(I-H)y]}$. We also used that idempotent rule to reduce the $I-H$ term. The purpose of finding the residual sum of squares and its expected value is to get a good estimate for $\hat \sigma^2$:
-
-
-$$\hat \sigma^2 = \frac{RSS}{(n-(p+1))}$$
-
-To derive this, we needed the fact that $\mathbf{I-H}$ is idempotent and the rule where we can take the expected value of a particular form of matrices that involves the **trace**. We then talk about what the trace is and how we can estimate it for the hat matrix as well for the identity matrix, which is how we got the $\mathbf{(n-(p+1))}$ piece. The $\hat \sigma^2$ value is an important piece for calculating the variance and covariance and variance/covariance matrix for the variance of $\hat \beta$:
-
-$$\mathrm{var}(\hat \beta)=\hat \sigma^2(X^TX)^{-1}$$
-
-
-\ 
-
-### RSS Review
-
-
-<div class="b1">
-
-$${\mathbf{e}^T\mathbf{e}=\mathbf{y}^T(\mathbf{I-H})\mathbf{y}}$$
-
-We estimate $\sigma^2$ as follows as the following:
-
-$$\hat\sigma^2 = \frac{\mathbf{e}^T\mathbf{e}}{n-(p+1)}$$
-
-
-Next, we solve for $E[e^Te]$:
-
-$$
-\begin{align}
-E[\mathbf{e}^T\mathbf{e}] &= \sigma^2(n-(p+1))\\
-\hat\sigma^2&=\frac{\mathbf{e}^T\mathbf{e}}{n-(p+1)}\\
-&=\frac{\mathbf{RSS}}{n-(p+1)}
-\end{align}
-$$
-
-
-</div>
-
-
-\ 
-
-#### Standard error
-
-**What is the Standard error?** How much we expect the sample slope to vary from one random sample to another. The following estimates the **standard error** of a $\beta$ coefficient:
-
-$$se(\hat\beta_{i-1})=\sqrt{(\mathbf{X}^T\mathbf{X})^{-1}_{ii}}\hat\sigma$$
-
-
-#### More on the Hat Matrix
-
-$$
-\begin{align}\mathbf{e}^T\mathbf{e}=&(\mathbf{y}-\hat{\mathbf{y}})^T(\mathbf{y}-\hat{\mathbf{y}})\\
-=&(\mathbf{y} - \mathbf{H}\mathbf{y})^T(\mathbf{y}-\mathbf{H}\mathbf{y})\\
-=&((\mathbf{I}-\mathbf{H})\mathbf{y})^T(\mathbf{I}-\mathbf{H})\mathbf{y}\\
-=&\mathbf{y}^T(\mathbf{I-H})^T(\mathbf{I}-\mathbf{H})\mathbf{y}\\
-=&\mathbf{y}^T(\mathbf{I-H})\mathbf{y}
-\end{align}
-$$
-
-
-$$\underbrace{\small E[\mathbf{X}^T\mathbf{CX}]=E[\mathbf{X}]^T\mathbf{C}E[\mathbf{X}] +\textrm{tr}(\mathbf{C}\textrm{var}(\mathbf{X}))}_{\color{teal}{\star \;\textbf{matrix fact}}}$$
-
-
-$$
-\begin{align}
-E[\mathbf{e}^T\mathbf{e}]=&E[\mathbf{y}^T(\mathbf{I-H})\mathbf{y}]\\
-=&E[\mathbf{y}]^T(\mathbf{I-H})E[\mathbf{y}]+\textrm{tr}((\mathbf{I-H})\textrm{var}(\mathbf{y}))\\
-=&\beta^T\mathbf{X}^T(\mathbf{I-H})\mathbf{X}\beta+\sigma^2\textrm{tr}(\mathbf{I-H})\\
-=&\beta^T\mathbf{X}^T(\mathbf{X}\beta-\mathbf{H}\mathbf{X}\beta)+\sigma^2\textrm{tr}(\mathbf{I-H})\\
-=&\beta^T\mathbf{X}^T(\mathbf{X}\beta-\mathbf{X}(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{X}\beta)+\sigma^2\textrm{tr}(\mathbf{I-H})\\
-=&\beta^T\mathbf{X}^T(\mathbf{X}\beta-\mathbf{X}\underbrace{(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{X}}_{\color{teal}{\large\mathbf{I}}}\beta)+\sigma^2\textrm{tr}(\mathbf{I-H})\\
-=&\beta^T\mathbf{X}^T(\mathbf{X}\beta-\mathbf{X}\beta)+\sigma^2\textrm{tr}(\mathbf{I-H})\\
-=&\beta^T\mathbf{X}^T(0)+\sigma^2\textrm{tr}(\mathbf{I-H})\\
-=&\sigma^2\textrm{tr}(\mathbf{I-H})\\
-=&\sigma^2(\textrm{tr}(\mathbf{I}_{n\times n})-\textrm{tr}(\mathbf{H}))\\
-=&\sigma^2(n-\textrm{tr}(\mathbf{H}))\\
-=&\sigma^2(n-(p+1))
-\end{align}
-$$
-
-
--------------------------------------------------
+$\require{color}\definecolor{teall}{RGB}{58, 171, 174} \definecolor{bluemoon}{RGB}{62, 71, 125}\definecolor{gween}{RGB}{73, 175, 129}$
 
 
 ## Hypothesis Testing
 
-When comparing different models, it's often that we want to compare a small model to a larger one. We can now compare the RSS of the two models! In linear regression, the goal is to minimize the $\mathbf{RSS}$ and establish a model of fewest explanatory variables $\mathbf{X_i}$. So if $RSS_{small}-RSS_{larger}$ is small, then the fit of the small model is almost as good as the larger one.
 
 
-<span class="sp6">a.</span> Is the model better than an intercept only model?
+When analyzing different models, we often want to compare a small model to a larger one. One way of doing this is by comparing the RSS of the two models. In linear regression, the goal is to minimize the RSS and establish a model of the fewest explanatory variables. So if $\small{{RSS}_{\mathrm{small}}-{RSS}_{\mathrm{large}}}$ is small, then the fit of the small model is almost as good as the larger one.
 
-\ 
-
-<div class="b1">
 
 $$
 \begin{align}
@@ -344,52 +37,38 @@ $$
 \end{align}
 $$
 
+
+
+<span class="pr11"> F-Statistic. </span> Next, we create an F-Statistic, which lets us associate models to the F-distribution. When comparing two linear regression models, we use the F-test to compare a small model to a large model. A fundamental part of the F test is the residual sum of squares, so it's essential to know how to get the RSS and its expected value. Based on the hypothesis testing, we can determine whether or not to reject our null hypothesis (two models are different). 
+
+
+<div class="example1">
+
+$$
+\begin{align}
+\mathrm{\large F} &\equiv \dfrac{{RSS}_{\mathrm{\small small}} - {RSS}_{\mathrm{\small larger}} / ({df}_{\mathrm{\small small}} - {df}_{\mathrm{\small larger}})}
+{{RSS}_{\mathrm{\small larger}} / {df}_{\mathrm{\small larger}}} \\
+& \sim \large{\mathrm{\Large F}}_{{df}_{\mathrm{\small small}} - {df}_{\mathrm{\small larger}}, \, {df}_{\mathrm{\small larger}}}
+\end{align}
+$$
+
+
 </div>
 
-\ 
 
+F-tests are set frameworks that use the f-distribution and are excellent for executing hypothesis testing. Such a hypothesis test allows us to compare a small model to a large model, i.e., check if the small model is just as good as the large model. Overall, we can use the F test to find a reasonable cut-off for our hypothesis test to determine whether we can reject our null hypothesis that the models are the same.
 
-
-Let's create an F-Statistic so we can compare to the F-distribtion!
-
-
-### F-Statistic
-
-
-$$F = \frac{RSS_{small} - RSS_{larger} / (df_{small}- df_{larger})}{RSS_{larger}/df_{larger}}\sim F_{df_{small}- df_{larger}, df_{larger}}$$
-
-
-
-When comparing two linear regression models, we use the **F-test** as a way to compare a small model to a large model. A big part of the F test is the residuals sum of squares. So it's important to know how to get the RSS and its expected value. Based on the hypothesis testing, we can determine whether or not to fail to reject the null hypothesis (two models are the same) or reject our null hypothesis (two models are different).
-
-
-#### Summary:
-
-
-**F tests** are important because they let us do **hypothesis testing**. The F-test gives us a way to systematically compare a small model to a large model. The hypothesis test gives us a way to see if the two models are equal, i.e. if the small model is just as good as the large model. The F test is a built framework that uses the f-distribution, which can be used to find a good cut off for our hypothesis test to determine whether we can reject our null hypothesis that the models are the same.
-
-
-\ 
-
-**Exercise.** If we're only given the value of estimate $\mathbf{\hat \sigma ^2}$, how can we get the $\mathbf{RSS}$?
-
-<div class= "a2">
-
-This example illustrates why we need an estimate of $\hat \sigma^2$ because, if we didn't know $\mathit{RSS}$, we do know that our estimate $\hat \sigma^2 =\frac{\mathbf{RSS}}{(n-(p+1))}$, which we can then get $\mathit{RSS}$ by estimating $E[e^Te]=\mathbf{\sigma^2}(n-(p+1))$.
-
-</div>
 
 
 
 -----------------------------------------------
 
 
+### F-Tests in R
 
-## Example. F-tests in R
+We use the Hitters' dataset in the following examples, which holds data on Major League Baseball from the 1986 and 1987 seasons.
 
-**Goal.** predict Salary from AtBat and Hits. Is this model better than an intercept only model?
-
-```{r, echo=TRUE}
+```{r, echo=TRUE, message=FALSE, warning=FALSE}
 library(ISLR)
 hitters_cc <- Hitters[complete.cases(Hitters), ]
 ```
@@ -397,9 +76,9 @@ hitters_cc <- Hitters[complete.cases(Hitters), ]
 
 \ 
 
-**F-Statistic.**
+**<span class="sp11">1. </span> Predict Salary from the variables AtBat and Hits in the provided dataset.**
 
-$$\large{F = \frac{RSS_{small} - RSS_{larger} / (df_{small}- df_{larger})}{RSS_{larger}/df_{larger}}}$$
+We want to construct a linear regression model to estimate `Salary` using the explanatory variables `AtBat` and `Hits`. Before we do this, we want to have a smaller model to compare, such as an intercept-only model—the following outlines how to create both such models.
 
 
 ```{r, echo=TRUE}
@@ -408,7 +87,17 @@ larger <- lm(Salary ~ AtBat + Hits, data = hitters_cc)
 ```
 
 
-**Get the RSS from this model.**
+Next, we implement the F-test to determine whether the model is better than an intercept-only model. There are two methods in finding the F-statistic:
+
+<span class="lp11">a. </span> `Method 1.` Calculate it numerically:
+
+
+$$
+\small\mathrm{\large F} \equiv \dfrac{{RSS}_{\mathrm{\small small}} - {RSS}_{\mathrm{\small larger}} / ({df}_{\mathrm{\small small}} - {df}_{\mathrm{\small larger}})}
+{{RSS}_{\mathrm{\small larger}} / {df}_{\mathrm{\small larger}}}
+$$
+
+We can get the RSS values for both models as follows:
 
 ```{r, echo=TRUE}
 rss_small <- summary(small)$sigma^2 * (nrow(hitters_cc) - 1)
@@ -416,53 +105,102 @@ rss_larger <- summary(larger)$sigma^2 * (nrow(hitters_cc) - 3)
 ```
 
 
-<span class="sp7">a.</span> **Method 1.** Calculate it with given data
+Now, we calculate the F-statistic and p-value as follows:
 
-```{r, echo=TRUE, eval=FALSE}
+```{r, echo=TRUE, eval=TRUE}
 f <- ((rss_small - rss_larger) / 2) / 
   (rss_larger / (nrow(hitters_cc) - 3))
-f
-1 - pf(f, 2, nrow(hitters_cc) - 3)
+
+Pr_f <- 1 - pf(f, 2, nrow(hitters_cc) - 3)
+```
+
+
+
+\ 
+
+
+<span class="lp11">b. </span> `Method 2.` Call the anova table:
+
+
+```{r, echo=TRUE, eval=TRUE}
+a <- anova(small,larger)
+```
+
+
+
+```{r}
+rownames(a) <- c("Model 1: Salary ~ 1", "Model 2: Salary ~ AtBat + Hits")
+
+kable(a, row.names = TRUE) %>%
+  kable_styling(font_size = 11, full_width = FALSE, bootstrap_options = "striped") %>%
+  column_spec(1, bold = TRUE)
 ```
 
 
 \ 
 
-<span class="sp7">b.</span> **Method 2.** Call the anova table
 
-```{r, echo=TRUE, eval=FALSE}
-anova(small,larger)
-```
+----------------------------------
 
-\ 
 
-**Testing One Variable.** Find if the Hits variable an important contribution.
+
+**<span class="sp11">2. </span> Find if the Hits variable is an important contribution to the model.**
+
+
+Here, we're testing for the significance of one variable, i.e., whether the explanatory variable `Hits` is significant in estimating `Salary`.
+
 
 $$
 H_0: \beta_2 = 0 \\
 H_A: \beta_2 \neq 0
 $$
 
-```{r, echo=TRUE, eval=FALSE}
+
+<span class="lp11">a.</span> `Anova Table.`
+
+Here, we assign our smaller model as the one excluding the explanatory variable Hits.
+
+```{r, echo=TRUE, eval=TRUE}
 small <- lm(Salary ~ AtBat, data = hitters_cc)
 larger <- lm(Salary ~ AtBat + Hits, data = hitters_cc)
-anova(small, larger)
+a <- anova(small, larger)
 ```
+
+```{r, echo=FALSE}
+rownames(a) <- c("Model 1: Salary ~ AtBat", "Model 2: Salary ~ AtBat + Hits")
+
+kable(a, row.names = TRUE) %>%
+  kable_styling(font_size = 11, full_width = FALSE, bootstrap_options = "striped") %>%
+  column_spec(1, bold = TRUE)
+```
+
+
 
 \ 
 
-<span class="sp7">c.</span> **Summary.**
 
-```{r echo=TRUE}
-library(ISLR)
-hitters_cc <- Hitters[complete.cases(Hitters), ]
-larger <- lm(Salary ~ AtBat + Hits, data = hitters_cc)
-summary1 <- summary(larger)
+<span class="lp11">b. </span> `Summary Table.`
+
+
+The following uses the R Stats summary function to display the summary statistics of the fitted linear model containing both explanatory variables Hits and AtBar for estimating Salary.
+
+
+```{r echo=TRUE, eval=FALSE}
+summary(larger)
 ```
 
-\ 
 
-**What is the p-value?** The probability of getting a statistic as extreme or more extreme than the observed test statistic given the null hypothesis is true.
+```{r, echo=FALSE}
+b2 <- broom::tidy(summary(larger))
+kable(b2) %>%
+  kable_styling(font_size = 11, full_width = FALSE, bootstrap_options = "striped") %>%
+  column_spec(1, bold = TRUE)
+```
+
+
+
+
+The summary statistics gives a p-value of $\small 1.405 \times 10^{-13}$ for the larger model. In other words, the probability of getting a statistic as extreme or more extreme than the observed test statistic, given the null hypothesis is true.
 
 
 
@@ -472,34 +210,30 @@ summary1 <- summary(larger)
 
 ## Confidence Intervals
 
-**Definition.** If we use the same sampling method to select different samples and computed an interval estimate for each sample, we would expect the true population parameter ($\beta_1$) to fall within the interval estimates 95% of the time.
+<span class="pr"> Definition.</span> If we use the same sampling method to select different samples and computed an interval estimate for each sample, we would expect the true population parameter ($\beta_1$) to fall within the interval estimates $95\%$ of the time.
 
 \ 
 
-<div class="b1">
+<div class="example1">
 
 $$\Large\hat\beta\pm t^*SE_{\hat\beta}$$
+
 </div>
 
 \ 
 
- **Confidence intervals** are a way to quantify our **uncertainty**. The confidence interval takes the $\hat \beta$ from our least squares estimation $\pm$ $t^*$, which comes from our t-distribution, multiplied by the standard error of $\hat \beta$ $\mathbf{SE_{\hat \beta}}$.
+
+Confidence intervals are a way to quantify our uncertainty. The confidence interval takes the $\hat \beta$ from our least squares estimation $\pm$ $t^*$, which comes from our t-distribution, multiplied by the standard error of $\hat \beta$.
 
 
-$$\hat\beta\pm t^*SE_{\hat\beta}$$
+Suppose we select a different sample of size $\mathcal{n}$ from the same population and compute $\mathcal{n}$ new interval estimates. Each one of those $\mathcal{n}$ interval estimates would be different. We would expect that $\small 95\%$ of those $\mathcal{n}$ would contain the true population parameter for that $\beta$ coefficient.
 
-
-Suppose we select a different sample of size $\mathcal{n}$ from the same population and compute $\mathcal{n}$ new interval estimates. Each one of those $\mathcal{n}$ interval estimates would be different. We would expect that **95%** of those $\mathcal{n}$ would contain the true population parameter for that $\beta$ coefficient.
 
 ------------------------------------------
 
 
 
-### More on Confidence Intervals
-
-
-
-**Run a simulation to generate 100 confidence intervals by sampling from a “true” population**
+### Confidence Intervals in R
 
 
 ```{r echo=FALSE}
@@ -507,11 +241,11 @@ library(purrr)
 library(ggplot2)
 ```
 
-In the following example, we are interested in illustrating the relationship between **Age** and **Wage** such that $\text{age} \approx \text{ Normal} (30,10)$, $\epsilon \approx \text{ Normal}(0,10)$, and $\text{sample } {n}=100$. 
 
-\ 
+In the following example, we are interested in illustrating the relationship between `Age` and `Wage` such that `Age` $\small{\small \approx \text{ Normal} (30,10)}$, $\small{\epsilon \approx \text{ Normal}(0,10)}$, and $\small{\text{sample } {n}=100}$. 
 
-<div class="b1">
+
+<div class="example1">
 
 $$
 \large
@@ -519,98 +253,101 @@ $$
 $$
 
 
-
-
-
 </div>
 
 \ 
 
-#### Generate Two Different Samples
 
-In the following, we generate a sample of 100 people (n). The `set.seed()` function makes it so that the method produces the same answer, and the `rnorm` function pulls a random normal variable.
+**<span class="sp11"> 1. </span> Run a simulation to generate $\small 100$ confidence intervals by sampling from a “true” population.**
 
-**Sample 1:**
 
-```{r sample1}
+<span class="lp10"> a. </span> Generate Two Different Samples:
+
+In the following, we generate a sample of $\small 100$. The `set.seed()` function makes it so that the method produces the same answer, and the `rnorm` function pulls a random normal variable.
+
+
+```{r sample1, echo=TRUE}
+# Sample 1
 set.seed(7)
 n <- 100 ## sample 100 people
-sample <- data.frame(
-  Age = rnorm(n,  mean = 30,  sd = 10)
-)
+sample <- data.frame(Age = rnorm(n,  mean = 30,  sd = 10))
 sample$Wage <- 2 * sample$Age + rnorm(n, mean = 0, sd = 10)
-head(sample)
 ```
 
-**Sample 2:**
 
-```{r sample2}
+
+
+```{r sample2, echo=TRUE}
+# Sample 2
 n <- 100
-sample2 <- data.frame(
-  Age = rnorm(n, mean = 30, sd = 10)
-)
+sample2 <- data.frame(Age = rnorm(n, mean = 30, sd = 10))
 sample2$Wage <- 2 * sample2$Age + rnorm(n, 0, 10) 
-head(sample2)
 ```
 
 
-#### Compare intervals to the “true parameter”
-
-In the following, we use the `lm` function to fit two linear models using the two different samples we generated above. Next, we use the `confint` function to compute the confidence intervals of one or more parameters for each of the fitted models.
+\ 
 
 
-**Fit linear models:**
+
+<span class="lp11">b. </span> Fit linear models: 
+
+Next, we use the `lm` function to fit two linear models using the two different samples we generated above. 
+
 
 ```{r model1, echo=TRUE}
-Model <- lm(Wage ~ Age, data = sample) ## Sample 1
+Model1 <- lm(Wage ~ Age, data = sample) ## Sample 1
 Model2 <- lm(Wage ~ Age, data = sample2) ## Sample 2
 ```
 
-**Compute the confidence intervals:**
 
 \ 
 
-```{r confint1}
-confint(Model)
-```
+<span class="lp12">c. </span> Compute the confidence intervals:
 
-\ 
+The following uses the `confint` function to compute the confidence intervals of one or more parameters for each of the fitted models. We then compare the confidence intervals to the "true parameter".
 
-<div class="a2">
 
-$$\texttt{95% CI}: (1.81, 2.21)$$ 
-Our true parameter is $\mathbf{2}$, which is a fixed number that falls within this above confidence interval estimate. Hence, sample 1 accurately captures an interval that contains the true parameter $\mathbf{2}$.
-
-</div>
-
-\ 
-
-```{r confint2}
+```{r confint, echo=TRUE,eval=FALSE}
+confint(Model1)
 confint(Model2)
 ```
 
+
+
+```{r, fig.align='center'}
+kable(confint(Model1), valign = TRUE) %>%
+  kable_styling(font_size = 11, full_width = FALSE, bootstrap_options = c("striped"), position = "float_left") %>%
+  add_header_above(c("Model 1" = 3), align = "right")
+
+kable(confint(Model2), valign = TRUE) %>%
+  kable_styling(font_size = 11, full_width = FALSE, bootstrap_options = c("striped"), position = "left") %>%
+  add_header_above(c("Model 2" = 3), align = "right")
+```
+
+
+
+
+
+
+For Model $1$, the confidence interval is $\small{\color{bluemoon} 95 \% \; \mathrm{CI}:} \left(1.81, 2.21 \right)$. Our true parameter is $\small{2}$, which is a fixed number that falls within this above confidence interval estimate. Hence, sample $\small 1$ accurately captures an interval that contains the true parameter $\small {2}$.
+
+For Model $2$, the confidence interval is $\small{\color{bluemoon} 95 \% \; \mathrm{CI}:} \left(1.89, 2.27 \right)$. Our true parameter is $\small{2}$, which is a fixed number that falls within this above confidence interval estimate. Hence, sample $\small 2$ accurately captures an interval that contains the true parameter $\small {2}$.
+
+
+
 \ 
 
-<div class="a2">
 
-$$\texttt{95% CI}: (1.89, 2.27)$$ 
-Our true parameter is $\mathbf{2}$, which is a fixed number that falls within this above confidence interval estimate. Hence, sample 2 accurately captures an interval that contains the true parameter $\mathbf{2}$.
 
-</div>
+<span class="lp13">d. </span> Generate 100 Confidence Intervals:
 
-\ 
 
-#### Generate 100 Confidence Intervals:
+Here, we create the `get_ci` function to generate a random sample, fit a model predicting the relationship between `Wage` and `Age`, and return the confidence interval for the model. We then use the `purrr` package to run this simulation to generate 100 confidence intervals by sampling from a “true” population. 
 
-In the following, we create the `get_ci` function to generate a random sample, fit a model predicting the relationship between `Wage` and `Age`, and return the confidence interval for the model. We then use the `purrr` package to run this simulation to generate 100 confidence intervals by sampling from a “true” population. 
 
-\ 
-
-```{r getci}
+```{r getci, echo=TRUE}
 get_ci <- function(id) {
-  sample <- data.frame(
-    Age = rnorm(n, mean = 30, sd = 10)
-  )
+  sample <- data.frame(Age = rnorm(n, mean = 30, sd = 10))
   sample$Wage <- 2* sample$Age + rnorm(n, 0, 10)
   model <- lm(Wage ~ Age, data = sample)
   return(
@@ -619,19 +356,18 @@ get_ci <- function(id) {
       ub = confint(model)[2,2],
       id = id
     ))}
-## map function call 100 times
 set.seed(7)
-ci <- map_df(1:100, get_ci)
+ci <- map_df(1:100, get_ci) ## map function call 100 times
 ```
 
 \ 
 
-#### Plot the 100 Confidence Intervals:
+<span class="lp14">e. </span> Plot the 100 Confidence Intervals:
 
 
 In the following code, we use the `ggplot` function to plot 100 simulated intervals from above.
 
-```{r plot, out.width=450, fig.align='center'}
+```{r plot, out.width=450, fig.align='center', echo=TRUE}
 ggplot(ci, aes(y = id, color = (lb > 2 | ub < 2))) + 
   geom_linerange(aes(xmin = lb, xmax = ub)) +
   geom_vline(xintercept = 2, lty=2) +
@@ -641,20 +377,11 @@ ggplot(ci, aes(y = id, color = (lb > 2 | ub < 2))) +
 
 \ 
 
-**What percent of the intervals contain the true parameter $\mathbf{2}$?**
 
-$$\frac{95 \small\text{ intervals}}{100\small\text{ intervals}}=95\texttt{%}$$
-
-In the above exercise, we're selecting 100 different samples and computing each of their interval estimates in order to get an approximation as close to the true population parameter. The figure we created above plots 100 simulated intervals represented by horizontal lines where the <span style="color:#001d47;">**black**</span> lines represent the intervals that contain the true parameter $\mathbf{2}$ and the <span style="color:#ff66ad;">**red**</span> lines represent the intervals that do **not** contain the true parameter. From the figure, we can calculate the percent of the intervals that contain the true parameter $\mathbf{2}$ by dividing all of the black lines by the total number of lines: $\frac{95}{100}=95\texttt{%}$.
+In the above exercise, we're selecting 100 different samples and computing each of their interval estimates in order to get an approximation as close to the true population parameter. The figure we created above plots 100 simulated intervals represented by horizontal lines where the *black* lines represent the intervals that contain the true parameter $\small{2}$ and the *red* lines represent the intervals that do not contain the true parameter. From the figure, we can calculate the percent of the intervals that contain the true parameter $\small{2}$ by dividing all of the black lines by the total number of lines: $\tfrac{95}{100}=95\texttt{%}$.
 
 
 
------------------------------
-
-## Code Appendix
-
-```{r ref.label = knitr::all_labels(), echo = TRUE, eval=FALSE}
-```
 
 
 

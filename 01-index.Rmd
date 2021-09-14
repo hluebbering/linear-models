@@ -2,7 +2,7 @@
 title: "Model Diagnostics"
 output:
   html_document: 
-    css: ./assets/styles1.css
+    css: ./assets/styles.css
     toc: yes
     toc_float: yes
     highlight: textmate
@@ -13,149 +13,57 @@ nocite: '@*'
 ---
 
 
-```{r include=FALSE}
-knitr::opts_chunk$set(out.width = 500,fig.align = "center", message = FALSE, warning = FALSE, echo = FALSE)
+```{r, include=FALSE}
+knitr::opts_chunk$set(out.width = 450,fig.align = "center", message = FALSE, warning = FALSE, echo = FALSE)
 library(ggplot2)
 library(broom)
 library(kableExtra)
 library(knitr)
-```
-
-
------------------------------
-
-
-## Checking Assumptions
-
-
-
-```{r AssumptionsCheck}
-mod_table <- data.frame("Assumptions" = 
-             c("Linearity",
-               "Constant Variance",
-               "Normality",
-               "Correlated Errors" ),
-           "Checking Assumptions" = 
-             c("Residuals vs. Fits Plots",
-               "Residuals vs. Fits Plots",
-               "Q-Q Plot",
-               "Structure of the data" ),
-           "Fixing Violations" = 
-             c("Transformations",
-               "Weighted/Generalized Least Squares (WLS/GLS)",
-               "Robust Regression",
-               "Generalized Least Squares (GLS)" )
-           )
-
-kable(mod_table, col.names = 
-        c("Assumptions", "Checking Assumptions", "Fixing Violated Assumptions")) %>%
-  kable_styling(full_width = FALSE, font_size = 14, bootstrap_options = "striped") %>%
-  collapse_rows(1) %>%
-  row_spec(0, color = "darkseagreen") %>%
-  column_spec(1, color = "slategray")
-```
-
-
-
-
-### Unusual Observations
-
-
-```{r Observations}
-mod_table <- data.frame("Unusual Observations" = 
-             c("Leverage",
-               "Outliers",
-               "Influential Points"),
-             "Calculated" = 
-               c("$\\underbrace{H_{ii} = h_i}_{\\text{diagonals of the hat matrix}}$",
-                 "$\\underbrace{r_i = \\frac{e_i}{s_e\\sqrt{1 - h_i}}}_{\\text{standardized residual}}$",
-                 "$\\underbrace{D_i = \\frac{1}{p}r_i^2\\frac{h_i}{1-{h_i}}}_{\\text{Cook's Distance}}$")
-           )
-
-kable(mod_table, col.names = 
-        c("Unusual Observations", "Calculated As")) %>%
-  kable_styling(full_width = FALSE, font_size = 14, bootstrap_options = "striped") %>%
-  collapse_rows(1) %>%
-  row_spec(0, color = "darkseagreen") %>%
-  column_spec(1, color = "slategray")
-```
-
-
-
-
-----------------------------
-
-
-## Packages
-
-In this lab we will work with the packages `faraway` and `visdat`.
-
-```{r Load-Packages, echo=TRUE}
+library(Rcpp)
 library(faraway) 
 library(visdat)
 ```
 
-
-
-### Data
-
-We will work with the data frame `mammalsleep`, from the faraway package. To load the data add the following to the .Rmd file:
-
+In this lab we will work with the packages `faraway` and `visdat`. We will work with the data frame `mammalsleep`, from the faraway package. First, we load the data into our environment:
 
 ```{r Load-Data, echo=TRUE}
-data("mammalsleep")
+library(faraway)
+library(visdat)
+data(mammalsleep)
 ```
 
 
 
-To find out more about the dataset, type the following in your Console: ?mammalsleep. A question mark before the name of an object will always bring up its help file. This command must be ran in the Console.
+$\require{color}\definecolor{teall}{RGB}{58, 171, 174} \definecolor{bluemoon}{RGB}{62, 71, 125}\definecolor{gween}{RGB}{73, 175, 129}$
 
 
-#### A description of the data:
-
-```{r DataFrame}
-?mammalsleep
-```
+## <span class="sp11">1. </span> Find the best fitted model for predicting sleep. 
 
 
-The mammalsleep dataframe holds data for the study of sleep in mammals. The data frame contains 62 observations and 10 variables. The variables include `body` in kg, `brain` in g, `nondream` (hrs/day), `dream` (hrs/day), `sleep` (hrs/day), `lifespan` in years, `gestation` time in days, `predation` index, `exposure` index, and `danger` index.  
+**<span class="lp11">a. </span> Run a visdat analysis on the data:**
+
+We use the `visdat` package to visualize everything inside of the mammalsleep dataframe. From this plot, we can identify each variables' class and whether the values are missing.
 
 
------------------------------
-
-
-
-
-## Conceptual Exercises
-
-In the following, we want to find the best fitted model for predicting **sleep**. 
-
-### 1. Run a `visdat` analysis on the data
-
-We can use the visdat package to visualize the mammalsleep dataset as follows:
-
-
-
-
-```{r Visdat, fig.cap="From the visdat output, we can see the number of missing values for the variables nondream, sleep, lifespan, and gestation."}
+```{r Visdat, fig.cap="The visdat output shows the number of missing values for variables nondream, sleep, lifespan, and gestation.", echo=TRUE}
 vis_dat(mammalsleep)
 ```
 
 
 
 
------------------------------
+\ 
 
-### 2. Fit a squares regression model to predict Sleep 
-
-We have a dataset that contains 62 observations, and we will be using 7 variables in our model: body weight, brain weight, lifespan, gestation time, prediction index, sleep exposure index, and danger We removed observations with missing values for the outcome sleep and the predictors lifespan, or gestation. 
+**<span class="lp11">b. </span> Fit a squares regression model to predict Sleep:**
 
 
-```{r Remove-Missing}
+Our dataset contains 62 observations, and we'll use the following 7 variables in our model: body weight, brain weight, lifespan, gestation time, prediction index, sleep exposure index, and danger. But first, we remove observations with missing values for the outcome sleep and the predictors lifespan, or gestation. 
+
+
+```{r Remove-Missing, echo=TRUE}
 df <- mammalsleep[(!is.na(mammalsleep$sleep) &
                      !is.na(mammalsleep$lifespan) &
-                     !is.na(mammalsleep$gestation)),
-                  ]
+                     !is.na(mammalsleep$gestation)),]
 ```
 
 
@@ -166,12 +74,11 @@ mod <- lm(sleep ~ body + brain + lifespan + gestation +
 ```
 
 
------------------------------
+\ 
 
+**<span class="lp11">c. </span> Test the model assumptions:**
 
-### 3. Test the model assumptions 
-
-#### Constant Variance Assumption
+`Constant Variance Assumption.`
 
 
 ```{r Resid-Fit, fig.cap = "Residuals vs. Fits plot to examine non-linearity and constant variance assumptions."}
@@ -189,12 +96,15 @@ ggplot(check, aes(x = fit, y = e)) +
 ```
 
 
+\ 
+
 
 From the above Residuals vs. Fits plot, there aren't enough observations to make a sound conclusion. Linearity looks okay. Though, we should be a little worried about the constant variance assumption because it seems the points fan out from a thinner to a wider extent. 
 
+
 \ 
 
-#### Normality Assumption
+`Normality Assumption.`
 
 ```{r Normality, fig.cap = "Q-Q plot to check normality of the residuals"}
 ggplot(check, aes(sample = e)) +
@@ -204,27 +114,30 @@ ggplot(check, aes(sample = e)) +
 ```
 
 
+\ 
+
+
 There seems to be a little deviation for the upper plot, which suggests that there are outliers present. So, maybe we should use a different model. 
 
 
 \ 
 
 
-------------------------------
+**<span class="lp11">d. </span> Test the transformed model assumptions:**
 
-### 4. Test the transformed model assumptions
-
-#### Take the log of the predictor:
+Here, we transform our linear regression by taking the $\small\log$ of the predictor variable as follows.
 
 
 ```{r lmFit-Log, echo=TRUE}
-modLog <- lm(log(sleep) ~ body + brain + lifespan + gestation +
-            predation + exposure + danger, 
-          data = df)
+modLog <- lm(log(sleep) ~ body + brain + lifespan + 
+               gestation + predation + exposure + 
+               danger, data = df)
 ```
 
 
-#### Test the model assumptions:
+\ 
+
+Now, we test the model assumptions, similar to the above, for the transformed model.
 
 ```{r Resid-Fit-Log, fig.cap = "Residuals vs. Fits plot to examine non-linearity and constant variance assumptions and Q-Q plot to check normality of the residuals", fig.show='hold', out.width=330}
 checkLog <- data.frame(
@@ -246,17 +159,20 @@ ggplot(checkLog, aes(sample = e)) +
 ```
 
 
-
+\ 
 
 Looking at the different plots, we can see that there are no significant improvements between the two models. Therefore, we will stick to the original squares regression model. Because we have a relatively small sample of 61 observations, we might violate some of the assumptions. 
 
 
 
------------------------------
+\ 
 
-### 5. Interpret the Model's Coefficients
+**<span class="lp11">e. </span> Interpret the Model's Coefficients:**
 
-```{r Final-Model}
+From above, we conclude that the original squares regression model is the better fit as opposed to a transformed model fit. Hence, we re-define our model as follows and evaluate its coefficients using `tidy`.
+
+
+```{r Final-Model, echo=TRUE}
 mod <- lm(sleep ~ body + brain + lifespan + gestation +
             predation + exposure + danger, 
           data = df)
@@ -264,8 +180,20 @@ mod <- lm(sleep ~ body + brain + lifespan + gestation +
 mod_table <- tidy(mod, conf.int = TRUE)
 ```
 
+\ 
 
-#### Forest Plot
+```{r}
+knitr::kable(mod_table) %>%
+  kable_styling(full_width = FALSE, bootstrap_options = c("striped", "condensed"), font_size = 11)
+```
+
+
+\ 
+
+The above summarizes information about the components of our final model, displaying each explanatory variables' estimate, standard error, F Statistic, p-value, and the confidence interval bounds. Further assessing the model's coefficients, we create a `Forest-Plot` to visualize the measures of effect of each explanatory variable and their confidence intervals.
+
+
+\ 
 
 ```{r Forest-Plot, fig.cap = "Forest Plot"}
 ggplot(mod_table[-1, ], aes(x = term, y = estimate,
@@ -276,62 +204,113 @@ ggplot(mod_table[-1, ], aes(x = term, y = estimate,
 ```
 
 
-It looks like there are two important variables: predation index and danger index. If we're already including danger and predation, we don't necessarily need to include the sleep exposure index. 
+\ 
+
+It looks like there are two important variables: predation index and danger index. Based on the above, if we're already including danger and predation, we don't necessarily need to include the sleep exposure index. 
 
 
-#### Final Model:
+\ 
 
-We choose not to include the sleep exposure index because the danger index is a combination of the predation and exposure index. Therefore, the danger index consists of the information we might gain from exposure.
+**<span class="lp11">f. </span> The Final Model:**
+
+Here, we form our final model based on the above analysis of various linear model fits. We choose not to include the sleep exposure index because the danger index is a combination of the predation and exposure index. Therefore, the danger index consists of the information we might gain from exposure.
 
 
 ```{r Updated-Final-Model, echo=TRUE}
 mod <- lm(sleep ~ body + brain + lifespan + gestation +
-            predation + danger, 
-          data = df)
+            predation + danger, data = df)
 
 mod_table <- tidy(mod, conf.int = TRUE)
 ```
 
 
 
-```{r TidyTable, fig.cap = "Tidy Table for Final Model"}
-kable(mod_table, digits = 2, 
-      col.names = c("Term", "Estimate", "SE", "Statistic", "p-value", "Lower Bound", "Upper Bound")) %>%
-  kable_styling(full_width = FALSE, 
-                font_size = 13,
-                bootstrap_options = "striped") %>%
-  collapse_rows(1, latex_hline = 'major') %>%
-  column_spec(1, color = "orchid") %>%
-  row_spec(0, font_size=14, color = "darkslategray") %>%
-  add_header_above(c(" " = 5, "95% Confidence Interval" = 2), 
-                   color = c("black", "slategray"))
+```{r}
+kable(mod_table, digits = 2, col.names = c("Term", "Estimate", "SE", "Statistic", "p-value", "Lower Bound", "Upper Bound")) %>%
+  kable_styling(full_width = FALSE, font_size = 11, bootstrap_options = c("striped", "condensed")) %>%
+  add_header_above(c(" " = 5, "95% Confidence Interval" = 2))
 ```
 
 
-The variables body, brain, and lifespan have little impact on sleep duration when adjusting for body, brain, lifespan, gestation, predation, and danger, all with coefficients very close to $0$. 
-
-- A one day increase in lifespan yields an expected change in total sleep hours per day of $-0.03$ (95% CI: -0.10, 0.04) holding all other variables at constant.
-- A one day increase in gestation time yields an expected change in total sleep hours per day of $-0.01$ (95% CI: -0.03, 0) holding all other variables at constant.
-- A one unit change in predation index yields an expected change in total sleep of $2.18$ (95% CI: 0.25, 4.1) hours per day holding all other variables constant.
-- A one unit change in danger index yields an expected change in total sleep of $-3.83$ (95% CI: -5.91,	-1.76) hours per day holding all other variables constant. 
+\ 
 
 
+The variables body, brain, and lifespan have little impact on sleep duration when adjusting for body, brain, lifespan, gestation, predation, and danger, all with coefficients very close to $\small 0$. 
 
-$$\hat Y = 16.49 - 0.001 X_1 + 0.002 X_2 - 0.03 X_3 - 0.01 X_4 + 2.18 X_5 - 3.83 X_6 + \varepsilon_{|x,i}$$
+- A one day increase in lifespan yields an expected change in total sleep hours per day of ${\small -0.03}$ (95% CI: -0.10, 0.04) holding all other variables at constant.
+- A one day increase in gestation time yields an expected change in total sleep hours per day of ${\small -0.01}$ (95% CI: -0.03, 0) holding all other variables at constant.
+- A one unit change in predation index yields an expected change in total sleep of ${\small 2.18}$ (95% CI: 0.25, 4.1) hours per day holding all other variables constant.
+- A one unit change in danger index yields an expected change in total sleep of ${\small -3.83}$ (95% CI: -5.91,	-1.76) hours per day holding all other variables constant. 
+
+
+
+$$
+\begin{gather}
+\color{darkgreen} \hat Y & \equiv {\small 16.49 - .001 X_1 + .002 X_2 - .03 X_3 - .01 X_4 + 2.18 X_5 - 3.83 X_6} & + {\large \varepsilon}_{\mathcal{\mid x,i}}
+\end{gather}
+$$
+
+
 
 
 
 
 -----------------------------
 
-## Code Appendix
 
-```{r ref.label = knitr::all_labels(), echo = TRUE, eval=FALSE}
+## Checking Model Assumptions
+
+
+
+```{r AssumptionsCheck}
+mod_table1 <- data.frame("Assumptions" = 
+             c("Linearity",
+               "Constant Variance",
+               "Normality",
+               "Correlated Error" ),
+           "Checking Assumptions" = 
+             c("Residuals vs. Fits Plot",
+               "Residuals vs. Fits Plot",
+               "Q-Q Plot",
+               "Structure of the data" ),
+           "Fixing Violations" = 
+             c("Transformations",
+               "Weighted Least Squares",
+               "Robust Regression",
+               "Generalized Least Squares" )
+           )
+```
+
+
+```{r Observations}
+mod_table2 <- data.frame("Unusual Observations" = 
+             c("Leverage",
+               "Outliers",
+               "Influential Points"),
+             "Calculated" = 
+               c("$\\small\\underbrace{H_{ii} = h_i}_{\\text{diagonals of the hat matrix}}$",
+                 "$\\underbrace{r_i = \\frac{e_i}{s_e\\sqrt{1 - h_i}}}_{\\text{standardized residual}}$",
+                 "$\\underbrace{D_i = \\frac{1}{p}r_i^2\\frac{h_i}{1-{h_i}}}_{\\text{Cook's Distance}}$")
+           )
+```
+
+
+
+```{r}
+kable(mod_table1, col.names = c("Assumptions", " Checking Assumptions", "Fixing Violated")) %>%
+  collapse_rows(1, valign = "bottom") %>%
+  kable_styling(full_width = FALSE, font_size = 12, bootstrap_options = c("striped"), position = "float_left") %>%
+  column_spec(1, color = "slategray")
+
+kable(mod_table2, col.names = c("Unusual Observations", "Calculated As")) %>%
+  kable_styling(full_width = FALSE, font_size = 12, bootstrap_options = c("striped"), position = "left") %>%
+  column_spec(1, color = "slategray")
 ```
 
 
 
 -----------------------------
+
 
 
 ## References
